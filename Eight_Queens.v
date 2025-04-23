@@ -17,7 +17,7 @@ It takes two parameters:
 
 Returns the absolute difference between n and m.
 *)
-Fixpoint abs (n m : nat) : nat :=
+Definition abs (n m : nat) : nat :=
   if leb n m then m - n else n - m.
 
 (*
@@ -143,7 +143,7 @@ Fixpoint perms (l : list nat) : list (list nat) :=
   match l with
   | [] => [[]]
   | x :: xs => concat (map (insert_all x) (perms xs))
-  end.
+  end. 
 
 (*
 The range function generates a list of natural numbers from 1 to n.
@@ -171,8 +171,29 @@ It works by:
 Definition all_valid_boards (n : nat) : list board :=
   filter is_valid_board (perms (range n)).
 
+(* Print all solutions for N = 1 *)
+Eval compute in all_valid_boards 1.
+
+(* Print all solutions for N = 2 *)
+Eval compute in all_valid_boards 2.
+
+(* Print all solutions for N = 3 *)
+Eval compute in all_valid_boards 3.
+
 (* Print all solutions for N = 4 *)
 Eval compute in all_valid_boards 4.
+
+(* Print all solutions for N = 5 *)
+Eval compute in all_valid_boards 5.
+
+(* Print all solutions for N = 6 *)
+Eval compute in all_valid_boards 6.
+
+(* Print all solutions for N = 7 *)
+Eval compute in all_valid_boards 7.
+
+(* Print all solutions for N = 8 and count them *)
+Eval compute in (length (all_valid_boards 8), all_valid_boards 8).
 
 (*
 The n_queens_solutions function is a wrapper around all_valid_boards.
@@ -241,4 +262,4 @@ Definition n_queens_fast (n : nat) : list board :=
 (* Test the efficient method *)
 Eval compute in n_queens_fast 4.
 
-(* You can use Extraction to OCaml for actual performance *)
+
