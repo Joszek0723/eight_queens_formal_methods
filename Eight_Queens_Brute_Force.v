@@ -1,24 +1,6 @@
 Require Import List Arith Lia.
 Import ListNotations.
 
-<<<<<<< HEAD
-(** A board is a list of column indices; index is the row *)
-(**
-  A board is abstactly represented by a list of n natural numbers,
-  where each index corresponds to a row, and the value at that index
-  refers to the column of the queen in that row.
-
-  e.g. [2;4;1;3] signifies
-  A 4 x 4 board with;
-  Row 1 has a queen in column 2.
-  Row 2 has a queen in column 4.
-  Row 3 has a queen in column 1.
-  Row 4 has a queen in column 3.
-*)
-Definition board := list nat.
-
-(** Absolute difference of two columns *)
-=======
 (*
 A board is represented as a list of natural numbers, where:
 - Each element represents a column position
@@ -35,7 +17,6 @@ It takes two parameters:
 
 Returns the absolute difference between n and m.
 *)
->>>>>>> main
 Definition abs (n m : nat) : nat :=
   if leb n m then m - n else n - m.
 
@@ -190,8 +171,29 @@ It works by:
 Definition all_valid_boards (n : nat) : list board :=
   filter is_valid_board (perms (range n)).
 
+(* Print all solutions for N = 1 *)
+Eval compute in all_valid_boards 1.
+
+(* Print all solutions for N = 2 *)
+Eval compute in all_valid_boards 2.
+
+(* Print all solutions for N = 3 *)
+Eval compute in all_valid_boards 3.
+
 (* Print all solutions for N = 4 *)
 Eval compute in all_valid_boards 4.
+
+(* Print all solutions for N = 5 *)
+Eval compute in all_valid_boards 5.
+
+(* Print all solutions for N = 6 *)
+Eval compute in all_valid_boards 6.
+
+(* Print all solutions for N = 7 *)
+Eval compute in all_valid_boards 7.
+
+(* Print all solutions for N = 8 *)
+Eval compute in all_valid_boards 8.
 
 (*
 The n_queens_solutions function is a wrapper around all_valid_boards.
@@ -203,8 +205,3 @@ This function provides a clean interface to get all solutions.
 *)
 Definition n_queens_solutions (n : nat) : list board :=
   all_valid_boards n.
-
-(* You can now compute for any n: *)
-(* Eval compute in n_queens_solutions 5. *)
-
-(* You can use Extraction to OCaml for actual performance *)
