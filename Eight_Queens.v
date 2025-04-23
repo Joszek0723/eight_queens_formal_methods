@@ -2,6 +2,10 @@ Require Import List Arith Lia.
 Import ListNotations.
 
 (*
+  *** Brute Force Solution ***
+*)
+
+(*
 A board is represented as a list of natural numbers, where:
 - Each element represents a column position
 - The index of the element represents the row
@@ -194,6 +198,10 @@ Eval compute in all_valid_boards 7.
 
 (* Print all solutions for N = 8 and count them *)
 Eval compute in (length (all_valid_boards 8), all_valid_boards 8).
+
+(*
+  *** Efficent Solution ***
+*)
 
 (*
 The n_queens_solutions function is a wrapper around all_valid_boards.
