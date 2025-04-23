@@ -4,7 +4,7 @@ Import ListNotations.
 (* A board is a list of column indices; index is the row *)
 Definition board := list nat.
 
-Fixpoint abs (n m : nat) : nat :=
+Definition abs (n m : nat) : nat :=
   if leb n m then m - n else n - m.
 
 Fixpoint safe (col : nat) (rest : board) (row_offset : nat) : Prop :=
