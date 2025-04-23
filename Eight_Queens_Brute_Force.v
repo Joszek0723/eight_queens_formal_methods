@@ -1,9 +1,22 @@
 Require Import List Arith Lia.
 Import ListNotations.
 
-(* A board is a list of column indices; index is the row *)
+(** A board is a list of column indices; index is the row *)
+(**
+  A board is abstactly represented by a list of n natural numbers,
+  where each index corresponds to a row, and the value at that index
+  refers to the column of the queen in that row.
+
+  e.g. [2;4;1;3] signifies
+  A 4 x 4 board with;
+  Row 1 has a queen in column 2.
+  Row 2 has a queen in column 4.
+  Row 3 has a queen in column 1.
+  Row 4 has a queen in column 3.
+*)
 Definition board := list nat.
 
+(** Absolute difference of two columns *)
 Definition abs (n m : nat) : nat :=
   if leb n m then m - n else n - m.
 
