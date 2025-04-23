@@ -143,7 +143,7 @@ Fixpoint perms (l : list nat) : list (list nat) :=
   match l with
   | [] => [[]]
   | x :: xs => concat (map (insert_all x) (perms xs))
-  end.
+  end. 
 
 (*
 The range function generates a list of natural numbers from 1 to n.
@@ -173,6 +173,9 @@ Definition all_valid_boards (n : nat) : list board :=
 
 (* Print all solutions for N = 4 *)
 Eval compute in all_valid_boards 4.
+
+(* Print all solutions for N = 8 and count them *)
+Eval compute in (length (all_valid_boards 8), all_valid_boards 8).
 
 (*
 The n_queens_solutions function is a wrapper around all_valid_boards.
