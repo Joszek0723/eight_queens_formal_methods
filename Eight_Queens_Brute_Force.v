@@ -171,11 +171,34 @@ It works by:
 Definition all_valid_boards (n : nat) : list board :=
   filter is_valid_board (perms (range n)).
 
+(* Print all solutions for N = 1 *)
+Eval compute in all_valid_boards 1.
+
+(* Print all solutions for N = 2 *)
+Eval compute in all_valid_boards 2.
+
+(* Print all solutions for N = 3 *)
+Eval compute in all_valid_boards 3.
+
 (* Print all solutions for N = 4 *)
 Eval compute in all_valid_boards 4.
 
+<<<<<<< HEAD
 (* Print all solutions for N = 8 and count them *)
 Eval compute in (length (all_valid_boards 8), all_valid_boards 8).
+=======
+(* Print all solutions for N = 5 *)
+Eval compute in all_valid_boards 5.
+
+(* Print all solutions for N = 6 *)
+Eval compute in all_valid_boards 6.
+
+(* Print all solutions for N = 7 *)
+Eval compute in all_valid_boards 7.
+
+(* Print all solutions for N = 8 *)
+Eval compute in all_valid_boards 8.
+>>>>>>> main
 
 (*
 The n_queens_solutions function is a wrapper around all_valid_boards.
@@ -187,8 +210,3 @@ This function provides a clean interface to get all solutions.
 *)
 Definition n_queens_solutions (n : nat) : list board :=
   all_valid_boards n.
-
-(* You can now compute for any n: *)
-(* Eval compute in n_queens_solutions 5. *)
-
-(* You can use Extraction to OCaml for actual performance *)
