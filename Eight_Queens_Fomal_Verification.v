@@ -1,6 +1,9 @@
 Require Import List Arith Lia.
 Import ListNotations.
 
+(* Import board definition and basic functions from brute force version *)
+Require Import Eight_Queens_Brute_Force.
+
 (*
 A board is represented as a list of natural numbers, where:
 - Each element represents a column position
