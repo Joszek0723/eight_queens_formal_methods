@@ -271,3 +271,40 @@ Definition n_queens_fast (n : nat) : list board :=
 Eval compute in n_queens_fast 4.
 
 
+
+
+(* First, let's prove the helper lemmas *)
+
+(* Helper lemma: safe_partial is equivalent to the propositional safe *)
+Lemma safe_partial_correct col rest offset :
+  safe col rest offset <-> safe_partial col rest offset = true.
+Proof.
+  split.
+  - (* Forward direction: safe -> safe_partial = true *)
+    revert offset. induction rest as [|c' rest IH]; intros offset.
+    + (* Base case: empty list *)
+      reflexivity.
+    + (* Inductive case *)
+      simpl. intros [H1 [H2 H3]].
+      rewrite IH by assumption.
+      rewrite <- Nat.eqb_neq in H1. rewrite H1.
+      rewrite <- Nat.eqb_neq in H2. rewrite H2.
+      reflexivity.
+  
+  - (* Backward direction: safe_partial = true -> safe *)
+    revert offset. induction rest as [|c' rest IH]; intros offset.
+    + (* Base case: empty list *)
+      reflexivity.
+    + (* Inductive case *)
+      simpl. destruct (col =? c') eqn:Ec; try discriminate.
+      destruct (abs col c' =? offset) eqn:Ea; try discriminate.
+      intros Hsafe.
+      (* Convert boolean equalities to inequalities *)
+      apply Nat.eqb_neq in Ec.  (* (col =? c') = false -> col <> c' *)
+      apply Nat.eqb_neq in Ea.  (* (abs col c' =? offset) = false -> abs col c' <> offset *)
+      split; [exact Ec|].
+      split; [exact Ea|].
+      apply IH.
+      exact Hsafe.
+Qed.
+

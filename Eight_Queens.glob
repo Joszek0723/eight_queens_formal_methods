@@ -12,7 +12,7 @@ R565:567 Coq.Init.Datatypes <> nat ind
 binder 559:559 <> n:1
 binder 561:561 <> m:2
 R572:574 Coq.Init.Datatypes <> nat ind
-R584:586 Coq.Arith.Compare_dec <> leb abbrev
+R584:586 Coq.Arith.Compare_dec <> leb syndef
 R588:588 eight_queens_formal_methods.Eight_Queens <> n:1 var
 R590:590 eight_queens_formal_methods.Eight_Queens <> m:2 var
 R609:611 Coq.Init.Peano <> ::nat_scope:x_'-'_x not

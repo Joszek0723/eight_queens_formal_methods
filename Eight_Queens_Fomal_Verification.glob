@@ -1,104 +1,50 @@
-DIGEST 821d7099ed87e87e30eb49726b534b4d
+DIGEST 39556ac9cbd777810c1125f59fc0dc87
 Feight_queens_formal_methods.Eight_Queens_Fomal_Verification
 R15:18 Coq.Lists.List <> <> lib
 R20:24 Coq.Arith.Arith <> <> lib
 R26:28 Coq.micromega.Lia <> <> lib
 R38:50 Coq.Lists.List ListNotations <> mod
 R144:183 eight_queens_formal_methods.Eight_Queens <> <> lib
-prf 483:492 <> safeb_spec
-binder 503:505 <> col:1
-binder 507:510 <> rest:2
-binder 512:514 <> row:3
-R544:548 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
-R537:539 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R519:523 eight_queens_formal_methods.Eight_Queens <> safeb def
-R525:527 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> col:1 var
-R529:532 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> rest:2 var
-R534:536 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> row:3 var
-R540:543 Coq.Init.Datatypes <> true constr
-R549:552 eight_queens_formal_methods.Eight_Queens <> safe def
-R554:556 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> col:1 var
-R558:561 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> rest:2 var
-R563:565 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> row:3 var
-R786:789 Coq.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
-R786:789 Coq.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
-R858:867 Coq.Arith.PeanoNat Nat eqb_eq thm
-R858:867 Coq.Arith.PeanoNat Nat eqb_eq thm
-R858:867 Coq.Arith.PeanoNat Nat eqb_eq thm
-R1054:1064 Coq.Arith.PeanoNat Nat eqb_neq thm
-R1054:1064 Coq.Arith.PeanoNat Nat eqb_neq thm
-R1054:1064 Coq.Arith.PeanoNat Nat eqb_neq thm
-R1140:1143 Coq.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
-R1131:1133 eight_queens_formal_methods.Eight_Queens <> abs def
-R1140:1143 Coq.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
-R1131:1133 eight_queens_formal_methods.Eight_Queens <> abs def
-R1312:1321 Coq.Arith.PeanoNat Nat eqb_eq thm
-R1312:1321 Coq.Arith.PeanoNat Nat eqb_eq thm
-R1312:1321 Coq.Arith.PeanoNat Nat eqb_eq thm
-R1418:1428 Coq.Arith.PeanoNat Nat eqb_neq thm
-R1418:1428 Coq.Arith.PeanoNat Nat eqb_neq thm
-R1418:1428 Coq.Arith.PeanoNat Nat eqb_neq thm
-R1472:1472 Coq.Init.Datatypes <> S constr
-R1472:1472 Coq.Init.Datatypes <> S constr
-R1472:1472 Coq.Init.Datatypes <> S constr
-prf 1590:1600 <> validb_spec
-binder 1611:1611 <> b:4
-R1629:1633 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
-R1622:1624 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R1614:1619 eight_queens_formal_methods.Eight_Queens <> validb def
-R1621:1621 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> b:4 var
-R1625:1628 Coq.Init.Datatypes <> true constr
-R1634:1638 eight_queens_formal_methods.Eight_Queens <> valid def
-R1640:1640 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> b:4 var
-R1789:1806 Coq.Bool.Bool <> andb_true_iff thm
-R1789:1806 Coq.Bool.Bool <> andb_true_iff thm
-R1789:1806 Coq.Bool.Bool <> andb_true_iff thm
-R1888:1897 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> safeb_spec thm
-R1888:1897 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> safeb_spec thm
-R1991:2000 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> safeb_spec thm
-R1991:2000 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> safeb_spec thm
-prf 2209:2220 <> validb_valid
-binder 2231:2231 <> b:5
-R2249:2252 Coq.Init.Logic <> ::type_scope:x_'->'_x not
-R2242:2244 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R2234:2239 eight_queens_formal_methods.Eight_Queens <> validb def
-R2241:2241 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> b:5 var
-R2245:2248 Coq.Init.Datatypes <> true constr
-R2253:2257 eight_queens_formal_methods.Eight_Queens <> valid def
-R2259:2259 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> b:5 var
-R2289:2299 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> validb_spec thm
-R2289:2299 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> validb_spec thm
-prf 2486:2497 <> valid_validb
-binder 2508:2508 <> b:6
-R2518:2521 Coq.Init.Logic <> ::type_scope:x_'->'_x not
-R2511:2515 eight_queens_formal_methods.Eight_Queens <> valid def
-R2517:2517 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> b:6 var
-R2530:2532 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R2522:2527 eight_queens_formal_methods.Eight_Queens <> validb def
-R2529:2529 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> b:6 var
-R2533:2536 Coq.Init.Datatypes <> true constr
-R2566:2576 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> validb_spec thm
-R2566:2576 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> validb_spec thm
-prf 4241:4261 <> solve_nqueens_correct
-binder 4272:4272 <> n:7
-binder 4274:4274 <> b:8
-R4301:4304 Coq.Init.Logic <> ::type_scope:x_'->'_x not
-R4279:4280 Coq.Lists.List <> In def
-R4285:4297 eight_queens_formal_methods.Eight_Queens <> n_queens_fast def
-R4299:4299 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> n:7 var
-R4282:4282 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> b:8 var
-R4312:4315 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
-R4305:4309 eight_queens_formal_methods.Eight_Queens <> valid def
-R4311:4311 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> b:8 var
-R4324:4326 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R4316:4321 Coq.Init.Datatypes <> length def
-R4323:4323 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> b:8 var
-R4327:4327 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> n:7 var
-R4360:4372 eight_queens_formal_methods.Eight_Queens <> n_queens_fast def
-R4539:4541 Coq.Lists.List <> seq def
-R4564:4571 Coq.Lists.List <> flat_map def
-R4576:4578 Coq.Lists.List <> seq def
-R4583:4583 Coq.Init.Datatypes <> S constr
-R4564:4571 Coq.Lists.List <> flat_map def
-R4576:4578 Coq.Lists.List <> seq def
-R4583:4583 Coq.Init.Datatypes <> S constr
+prf 311:330 <> safe_partial_correct
+binder 332:334 <> col:1
+binder 336:339 <> rest:2
+binder 341:346 <> offset:3
+R372:376 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R352:355 eight_queens_formal_methods.Eight_Queens <> safe def
+R357:359 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> col:1 var
+R361:364 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> rest:2 var
+R366:371 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> offset:3 var
+R405:407 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R377:388 eight_queens_formal_methods.Eight_Queens <> safe_partial def
+R390:392 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> col:1 var
+R394:397 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> rest:2 var
+R399:404 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> offset:3 var
+R408:411 Coq.Init.Datatypes <> true constr
+R717:727 Coq.Arith.PeanoNat Nat eqb_neq thm
+R717:727 Coq.Arith.PeanoNat Nat eqb_neq thm
+R717:727 Coq.Arith.PeanoNat Nat eqb_neq thm
+R765:775 Coq.Arith.PeanoNat Nat eqb_neq thm
+R765:775 Coq.Arith.PeanoNat Nat eqb_neq thm
+R765:775 Coq.Arith.PeanoNat Nat eqb_neq thm
+R1049:1052 Coq.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
+R1049:1052 Coq.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
+R1109:1112 Coq.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
+R1099:1101 eight_queens_formal_methods.Eight_Queens <> abs def
+R1109:1112 Coq.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
+R1099:1101 eight_queens_formal_methods.Eight_Queens <> abs def
+R1234:1244 Coq.Arith.PeanoNat Nat eqb_neq thm
+R1234:1244 Coq.Arith.PeanoNat Nat eqb_neq thm
+R1305:1315 Coq.Arith.PeanoNat Nat eqb_neq thm
+R1305:1315 Coq.Arith.PeanoNat Nat eqb_neq thm
+prf 1544:1561 <> solve_nqueens_safe
+binder 1563:1563 <> n:4
+binder 1565:1565 <> k:5
+binder 1567:1573 <> partial:6
+R1579:1584 Coq.Lists.List <> Forall ind
+R1606:1618 eight_queens_formal_methods.Eight_Queens <> solve_nqueens def
+R1620:1620 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> n:4 var
+R1622:1622 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> k:5 var
+R1624:1630 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> partial:6 var
+binder 1591:1591 <> b:7
+R1596:1600 eight_queens_formal_methods.Eight_Queens <> valid def
+R1602:1602 eight_queens_formal_methods.Eight_Queens_Fomal_Verification <> b:7 var
