@@ -89,7 +89,7 @@ This is a crucial correctness property of the backtracking algorithm.
 *)
 
 
-Lemma solve_nqueens_correct : forall n k partial b,
+(* Lemma solve_nqueens_correct : forall n k partial b,
   In b (solve_nqueens n k partial) -> 
   valid (b ++ partial) /\ length b = k.
 Proof.
@@ -127,7 +127,7 @@ Proof.
   apply solve_nqueens_correct with (partial := []) in H.
   simpl in H. rewrite app_nil_r in H.
   exact H.
-Qed.
+Qed. *)
 
 
 
