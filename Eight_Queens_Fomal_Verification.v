@@ -4,6 +4,116 @@ Import ListNotations.
 (* Import board definition and basic functions from brute force version *)
 Require Import eight_queens_formal_methods.Eight_Queens.
 
+
+(* First, let's prove the helper lemmas *)
+
+(* Helper lemma: safe_partial is equivalent to the propositional safe *)
+Lemma safe_partial_correct col rest offset :
+  safe col rest offset <-> safe_partial col rest offset = true.
+Proof.
+  split.
+  - revert offset. induction rest as [|c' rest IH]; intros offset.
+    + reflexivity.
+    + simpl. intros [H1 [H2 H3]]. rewrite IH; trivial.
+      rewrite Nat.eqb_neq, Nat.eqb_neq; intuition.
+  - revert offset. induction rest as [|c' rest IH]; intros offset.
+    + trivial.
+    + simpl. destruct (col =? c') eqn:Ec; try discriminate.
+      destruct (abs col c' =? offset) eqn:Ea; try discriminate.
+      rewrite Nat.eqb_eq in Ec. rewrite Nat.eqb_eq in Ea.
+      split; [lia|split; [lia|apply IH; auto]].
+Qed.
+
+(* Helper lemma: solutions from solve_nqueens are valid *)
+Lemma solve_nqueens_safe n k partial :
+  Forall (fun b => valid b) (solve_nqueens n k partial).
+Proof.
+  revert partial.
+  induction k as [|k IH]; intros partial; simpl.
+  - constructor. constructor.
+  - apply Forall_flat_map. intros col.
+    destruct (safe_partial col partial 1) eqn:Hsafe.
+    + constructor. intros b Hb. apply IH.
+    + constructor.
+Qed.
+
+(* Helper lemma: solve_nqueens produces permutations of [1..n] *)
+Lemma solve_nqueens_permutation n k partial :
+  Forall (fun b => Permutation (partial ++ range k) b) (solve_nqueens n k partial).
+Proof.
+  revert partial.
+  induction k as [|k IH]; intros partial; simpl.
+  - constructor. rewrite app_nil_r. apply Permutation_refl.
+  - apply Forall_flat_map. intros col.
+    destruct (safe_partial col partial 1) eqn:Hsafe.
+    + constructor. intros b Hb. specialize (IH (col :: partial)).
+      apply Forall_forall in IH. apply IH in Hb.
+      simpl in Hb. rewrite <- app_assoc in Hb. simpl in Hb.
+      apply Permutation_cons_app. auto.
+    + constructor.
+Qed.
+
+(* Helper lemma: any valid solution is found by solve_nqueens *)
+Lemma solve_nqueens_complete n b :
+  length b = n -> valid b -> In b (solve_nqueens n n []).
+Proof.
+  revert b.
+  induction n as [|n IH]; intros b Hlen Hvalid.
+  - destruct b; inversion Hlen. simpl. left. reflexivity.
+  - assert (Hn : n = length (tl b)) by (destruct b; simpl in *; lia).
+    destruct b as [|col rest]; inversion Hlen.
+    simpl in Hvalid. destruct Hvalid as [Hsafe Hvalid_rest].
+    simpl.
+    apply in_flat_map. exists col.
+    rewrite safe_partial_correct in Hsafe. rewrite Hsafe.
+    left.
+    apply IH.
+    + simpl in Hn. assumption.
+    + assumption.
+Qed.
+
+(* Now we can prove the main theorem *)
+
+Theorem methods_equivalent n :
+  Permutation (all_valid_boards n) (n_queens_fast n).
+Proof.
+  unfold all_valid_boards, n_queens_fast.
+  apply Permutation_filter.
+  - apply perms_range_permutation.
+  - intros b. rewrite valid_equiv. reflexivity.
+Qed.
+
+(* Additional helper lemma showing perms produces permutations *)
+Lemma perms_range_permutation n :
+  Forall (fun b => Permutation (range n) b) (perms (range n)).
+Proof.
+  induction n as [|n IH]; simpl.
+  - constructor. constructor.
+  - rewrite range_S. simpl.
+    apply Forall_concat. apply Forall_map.
+    intros l Hl. apply Forall_forall in IH.
+    apply IH in Hl.
+    apply insert_all_permutation; auto.
+Qed.
+
+(* Helper lemma about insert_all preserving permutations *)
+Lemma insert_all_permutation x l :
+  Forall (fun l' => Permutation (x :: l) l') (insert_all x l).
+Proof.
+  induction l as [|y ys IH]; simpl.
+  - constructor. constructor.
+  - constructor.
+    + constructor. apply Permutation_refl.
+    + apply Forall_map. intros zs Hzs.
+      apply Forall_forall in IH. apply IH in Hzs.
+      constructor. assumption.
+Qed.
+
+
+
+
+
+
 (*
 The validb_spec lemma proves the equivalence between the boolean and propositional versions of board validation.
 It states that for any board b, validb b = true if and only if valid b.
@@ -128,6 +238,8 @@ Proof.
   simpl in H. rewrite app_nil_r in H.
   exact H.
 Qed. *)
+
+
 
 
 
