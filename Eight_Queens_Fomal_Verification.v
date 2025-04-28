@@ -12,16 +12,32 @@ Lemma safe_partial_correct col rest offset :
   safe col rest offset <-> safe_partial col rest offset = true.
 Proof.
   split.
-  - revert offset. induction rest as [|c' rest IH]; intros offset.
-    + reflexivity.
-    + simpl. intros [H1 [H2 H3]]. rewrite IH; trivial.
-      rewrite Nat.eqb_neq, Nat.eqb_neq; intuition.
-  - revert offset. induction rest as [|c' rest IH]; intros offset.
-    + trivial.
-    + simpl. destruct (col =? c') eqn:Ec; try discriminate.
+  - (* Forward direction: safe -> safe_partial = true *)
+    revert offset. induction rest as [|c' rest IH]; intros offset.
+    + (* Base case: empty list *)
+      reflexivity.
+    + (* Inductive case *)
+      simpl. intros [H1 [H2 H3]].
+      rewrite IH by assumption.
+      rewrite <- Nat.eqb_neq in H1. rewrite H1.
+      rewrite <- Nat.eqb_neq in H2. rewrite H2.
+      reflexivity.
+  
+  - (* Backward direction: safe_partial = true -> safe *)
+    revert offset. induction rest as [|c' rest IH]; intros offset.
+    + (* Base case: empty list *)
+      reflexivity.
+    + (* Inductive case *)
+      simpl. destruct (col =? c') eqn:Ec; try discriminate.
       destruct (abs col c' =? offset) eqn:Ea; try discriminate.
-      rewrite Nat.eqb_eq in Ec. rewrite Nat.eqb_eq in Ea.
-      split; [lia|split; [lia|apply IH; auto]].
+      intros Hsafe.
+      (* Convert boolean equalities to inequalities *)
+      apply Nat.eqb_neq in Ec.  (* (col =? c') = false -> col <> c' *)
+      apply Nat.eqb_neq in Ea.  (* (abs col c' =? offset) = false -> abs col c' <> offset *)
+      split; [exact Ec|].
+      split; [exact Ea|].
+      apply IH.
+      exact Hsafe.
 Qed.
 
 (* Helper lemma: solutions from solve_nqueens are valid *)
