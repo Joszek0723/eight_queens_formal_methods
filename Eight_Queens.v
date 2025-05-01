@@ -158,6 +158,17 @@ This function provides a clean interface to get all solutions.
 Definition n_queens_brute_force (n : nat) : list board :=
   all_valid_boards n.
 
+(** * Correctness of the brute-force solver
+
+  We now turn to proving the **factual correctness** of our brute-force n-queens algorithm.
+  Concretely, we must establish two key properties:
+
+  - **Soundness**: every board the algorithm returns is indeed a valid n-queens solution.
+  - **Completeness**: every valid n-queens solution of size n is found by the brute-force procedure.
+
+  We prove these in the lemmas that follow.
+*)
+
 (*-- Soundness: every board returned really is valid *)
 Lemma brute_force_sound n b :
   In b (n_queens_brute_force n) ->
@@ -167,6 +178,75 @@ Proof.
   intros Hin; apply filter_In in Hin as [_ Hvalid]; exact Hvalid.
 Qed.
 
+(** [in_insert_all] characterizes the shape of any list produced by [insert_all x l]:
+    every such list decomposes as [l1 ++ x :: l2], and removing [x] leaves a
+    permutation of the original list [l]. *)
+Lemma in_insert_all : forall x l l',
+  In l' (insert_all x l) ->
+  exists l1 l2, l' = l1 ++ x :: l2 /\ Permutation (l1 ++ l2) l.
+Proof.
+  intros x l l' Hin.
+  induction l as [|y ys IH] in l', Hin |- *.
+  - (* Base case: empty list *)
+    simpl in Hin. destruct Hin as [H|H]; [|contradiction].
+    subst l'. exists [], []. split; auto.
+  - (* Inductive case: y :: ys *)
+    simpl in Hin. destruct Hin as [H|H].
+    + (* First case: direct insertion *)
+      subst l'. exists [], (y::ys). split; auto.
+    + (* Second case: recursive insertion *)
+      apply in_map_iff in H. destruct H as [zs [Heq Hzs]].
+      apply IH in Hzs. destruct Hzs as [l1 [l2 [Heq' Hperm]]].
+      subst zs.
+      exists (y::l1), l2. split.
+      * (* Equality part *)
+        rewrite <- Heq. simpl. reflexivity.
+      * (* Permutation part *)
+        apply Permutation_cons. reflexivity. assumption.
+Qed.
+
+(** Soundness of [perms]: every list returned by [perms l] is a permutation of [l]. *)
+Lemma perms_sound : forall l l', In l' (perms l) -> Permutation l l'.
+Proof.
+  induction l as [|a l IHl]; intros l' Hin.
+  - (* Base case: empty list *)
+    simpl in Hin. destruct Hin as [H | H]; [subst l'; apply Permutation_refl | contradiction].
+  - (* Inductive case: a::l *)
+    simpl in Hin. 
+    apply in_concat in Hin. destruct Hin as [l'' [Hin1 Hin2]].
+    apply in_map_iff in Hin1. destruct Hin1 as [l''' [Heq Hin1]].
+    subst l''.
+    apply IHl in Hin1.  (* Now have Permutation l l''' *)
+    clear IHl.
+    (* Need to show Permutation (a::l) l' where l' is in insert_all a l''' *)
+    generalize dependent l'.
+    induction l''' as [|x xs IH] in a, Hin1 |- *.
+    + (* Case where l''' is empty *)
+      simpl. intros l' Hin2.
+      destruct Hin2 as [H|H]; [subst l' | contradiction].
+      simpl. apply Permutation_cons. reflexivity. apply Hin1.
+    + (* Case where l''' is x::xs *)
+      simpl. intros l' Hin2.
+      destruct Hin2 as [H|H].
+      * subst l'. apply Permutation_cons. reflexivity. assumption.
+      * (* Handle the mapped case *)
+        apply in_map_iff in H. destruct H as [zs [Heq' Hzs]].
+        apply in_insert_all in Hzs. destruct Hzs as [l1 [l2 [Heq'' Hperm]]].
+        subst zs l'.
+        apply Permutation_trans with (a :: x :: l1 ++ l2). 
+        apply Permutation_cons. reflexivity. 
+        apply Permutation_trans with (x :: xs).
+          ** apply Hin1.
+          ** apply perm_skip. apply Permutation_sym, Hperm.
+          ** (* First, prove that x::l1++a::l2 is a permutation of a::x::l1++l2 *)
+          apply Permutation_trans with (x :: a :: l1 ++ l2).
+            *** apply perm_swap.  (* Swaps a and x *)
+            *** apply perm_skip.  (* Keeps x at head *)
+                apply Permutation_cons_app.  (* Moves a into the list *)
+                apply Permutation_refl.
+Qed.
+
+(** The simplest insertion: inserting [a] into [l2] always yields [a::l2] as one of the results. *)
 Lemma insert_all_head : forall a l2, In (a :: l2) (insert_all a l2).
 Proof.
   intros.
@@ -175,6 +255,7 @@ Proof.
   - simpl. left. reflexivity.
 Qed.
 
+(** Completeness of [perms]: every permutation of [l] appears in [perms l]. *)
 Lemma perms_complete : forall l l', Permutation l l' -> In l' (perms l).
 Proof.
   induction l; intros l' Hperm.
@@ -209,6 +290,8 @@ Proof.
         -- assumption.
 Qed.
 
+(** Completeness of brute force search: any valid board of size [n] and correct permutation
+    of [range n] is found by [n_queens_brute_force n]. *)
 Theorem brute_force_complete n b :
   length b = n ->
   valid b ->
@@ -224,6 +307,41 @@ Proof.
   - apply Hvalid.
 Qed.
 
+(** The length of [range n] is exactly [n]. *)
+Lemma range_length : forall n, length (range n) = n.
+Proof.
+  induction n as [|n IH].
+  - simpl; reflexivity.
+  - simpl range. rewrite app_length, IH. simpl. rewrite Nat.add_comm. reflexivity.
+Qed.
+
+(** Full correctness of the brute-force solver:
+    it returns exactly those boards of length [n], valid, and permutations of [range n]. *)
+Theorem brute_force_correct n b :
+  In b (n_queens_brute_force n) <->
+  (length b = n /\ valid b /\ Permutation b (range n)).
+Proof.
+  split.
+  - (* Soundness direction *)
+    intros Hin.
+    split; [| split].
+    + unfold n_queens_brute_force, all_valid_boards in Hin.
+      apply filter_In in Hin as [Hperm Hvalid].
+      apply perms_sound in Hperm.
+      apply Permutation_length in Hperm.
+      rewrite range_length in Hperm.  (* This is the key change *)
+      symmetry; assumption.
+    + unfold valid. (* Convert valid to validb = true *)
+      apply brute_force_sound with (n := n). (* Explicitly provide n *)
+      assumption.
+    + unfold n_queens_brute_force, all_valid_boards in Hin.
+      apply filter_In in Hin as [Hperm _].
+      apply perms_sound in Hperm.
+      apply Permutation_sym; assumption.
+  - (* Completeness direction *)
+    intros [Hlen [Hvalid Hperm]].
+    apply brute_force_complete; assumption.
+Qed.
 
 (*
   *** Efficent Solution ***
