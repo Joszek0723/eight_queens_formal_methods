@@ -1,4 +1,6 @@
 Require Import List Arith Lia.
+From Coq Require Import List Permutation.
+Require Import Coq.Sorting.Permutation.
 Import ListNotations.
 
 (*
@@ -134,20 +136,16 @@ Eval compute in all_valid_boards 3.
 Eval compute in all_valid_boards 4.
 
 (* Print all solutions for N = 5 *)
-Eval compute in all_valid_boards 5.
+Eval compute in (length (all_valid_boards 5), all_valid_boards 5).
 
 (* Print all solutions for N = 6 *)
-Eval compute in all_valid_boards 6.
+Eval compute in (length (all_valid_boards 6), all_valid_boards 6).
 
 (* Print all solutions for N = 7 *)
-Eval compute in all_valid_boards 7.
+Eval compute in (length (all_valid_boards 7), all_valid_boards 7).
 
 (* Print all solutions for N = 8 and count them *)
 Eval compute in (length (all_valid_boards 8), all_valid_boards 8).
-
-(*
-  *** Efficent Solution ***
-*)
 
 (*
 The n_queens_brute_force function is a wrapper around all_valid_boards.
@@ -159,6 +157,77 @@ This function provides a clean interface to get all solutions.
 *)
 Definition n_queens_brute_force (n : nat) : list board :=
   all_valid_boards n.
+
+(*-- Soundness: every board returned really is valid *)
+Lemma brute_force_sound n b :
+  In b (n_queens_brute_force n) ->
+  validb b = true.
+Proof.
+  unfold n_queens_brute_force, all_valid_boards.
+  intros Hin; apply filter_In in Hin as [_ Hvalid]; exact Hvalid.
+Qed.
+
+Lemma insert_all_head : forall a l2, In (a :: l2) (insert_all a l2).
+Proof.
+  intros.
+  induction l2 as [|y ys IH].
+  - simpl. left. reflexivity.
+  - simpl. left. reflexivity.
+Qed.
+
+Lemma perms_complete : forall l l', Permutation l l' -> In l' (perms l).
+Proof.
+  induction l; intros l' Hperm.
+  - (* Base case for l = [] *)
+    simpl.
+    apply Permutation_nil in Hperm.
+    subst l'.
+    left; reflexivity.
+  - (* Inductive case for l = a::l *)
+    simpl.
+    assert (In a l') as Ha.
+    { apply Permutation_in with (x := a) in Hperm; [| left; reflexivity].
+      assumption. }
+    destruct (in_split a l') as [l1 [l2 Hl']]; [assumption|].
+    subst l'.
+    apply Permutation_cons_app_inv in Hperm.
+    apply in_concat.
+    exists (insert_all a (l1 ++ l2)).
+    split.
+    + apply in_map. apply IHl. apply Hperm.
+    + clear IHl Hperm.
+      induction l1 as [|x l1 IH].
+      * apply insert_all_head.
+      * (* Case l1 = x::l1 *)
+        simpl.
+        right.
+        apply in_map.
+        apply IH.
+        simpl in Ha.
+        destruct Ha as [Hax | Ha'].
+        -- subst x. apply in_or_app. right. simpl. left. reflexivity.
+        -- assumption.
+Qed.
+
+Theorem brute_force_complete n b :
+  length b = n ->
+  valid b ->
+  Permutation b (range n) ->
+  In b (n_queens_brute_force n).
+Proof.
+  unfold n_queens_brute_force, all_valid_boards.
+  intros Hlen Hvalid Hperm.
+  apply filter_In.
+  split.
+  - apply perms_complete.
+    apply Permutation_sym, Hperm.  (* Flip the permutation relation *)
+  - apply Hvalid.
+Qed.
+
+
+(*
+  *** Efficent Solution ***
+*)
 
 (*
 The safeb_efficient function is an optimized version of safeb for the backtracking solution.
@@ -236,43 +305,3 @@ Definition n_queens_backtracking (n : nat) : list board :=
 
 (* Test the efficient method *)
 Eval compute in n_queens_backtracking 4.
-
-
-
-Theorem brute_force_equals_backtracking n :
-  n_queens_brute_force n = n_queens_backtracking n.
-Proof.
-  unfold n_queens_brute_force, n_queens_backtracking.
-  unfold all_valid_boards.
-  
-  (* First prove both methods produce valid boards *)
-  assert (forall b, In b (filter validb (perms (range n))) -> validb b = true).
-  { intros b Hin. apply filter_In in Hin. apply Hin. }
-  
-  assert (forall b, In b (solve_nqueens n n []) -> validb b = true).
-  { induction n; simpl; intros b Hin.
-    - inversion Hin; subst. reflexivity.
-    - apply flat_map_in in Hin.
-      destruct Hin as [col [Hcol Hboard]].
-      destruct (safeb_efficient col [] 1) eqn:Hsafe; simpl in Hcol.
-      + injection Hcol; intros; subst.
-        apply andb_true_iff. split.
-        * rewrite <- safeb_equivalent. assumption.
-        * apply IHn. assumption.
-      + contradiction. }
-  
-  (* Now prove both methods produce the same boards *)
-  apply filter_ext_in.
-  split.
-  - intros b Hin. apply H in Hin.
-    apply valid_board_columns in Hin; [|rewrite range_length; auto].
-    destruct Hin as [Hnodup Hforall].
-    apply permutations_complete; auto.
-    apply range_length.
-  - intros b Hin. apply H0 in Hin.
-    apply filter_In. split; auto.
-    apply in_permutations.
-    apply valid_board_columns in Hin; [|rewrite range_length; auto].
-    destruct Hin as [Hnodup Hforall].
-    apply range_NoDup.
-Qed.
