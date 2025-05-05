@@ -3,30 +3,64 @@ From Coq Require Import List Permutation Bool.
 Require Import Coq.Sorting.Permutation.
 Import ListNotations.
 
-(*
-  *** Brute Force Solution ***
-*)
+(**
+  * N-Queens Formal Verification
+  * 
+  * This file contains formal verification of the N-Queens problem using Coq.
+  * We implement and verify two main approaches:
+  * 1. A brute force approach that generates all permutations and filters valid ones
+  * 2. A backtracking approach that incrementally builds valid solutions
+  *)
 
-(*
-A board is represented as a list of natural numbers, where:
-- Each element represents a column position
-- The index of the element represents the row
-- The length of the list represents the board size
-*)
+(**
+  * Brute Force Solution 
+  *
+  * The brute force approach works by:
+  * 1. Generating all possible permutations of queen placements
+  * 2. Filtering them to keep only valid ones
+  * 3. A valid placement ensures no queens attack each other
+  *)
+
+(**
+  * [board] represents a chess board configuration for the N-Queens problem.
+  * Each element represents a column position, and the index represents the row.
+  * The length of the list represents the board size.
+  * 
+  * For example, [2; 4; 1; 3] represents a 4×4 board where:
+  * - Row 1 has a queen in column 2
+  * - Row 2 has a queen in column 4
+  * - Row 3 has a queen in column 1
+  * - Row 4 has a queen in column 3
+  *)
 Definition board := list nat.
 
-(*
-The abs function computes the absolute difference between two natural numbers.
-It takes two parameters:
-- n: First natural number
-- m: Second natural number
-
-Returns the absolute difference between n and m.
-*)
+(**
+  * [abs n m] computes the absolute difference between two natural numbers.
+  * 
+  * This function is essential for checking diagonal attacks in the N-Queens problem.
+  * Two queens attack each other diagonally if the absolute difference in their row 
+  * positions equals the absolute difference in their column positions.
+  *
+  * @param n The first natural number
+  * @param m The second natural number
+  * @return The absolute difference |n - m|
+  *)
 Definition abs (n m : nat) : nat :=
   if leb n m then m - n else n - m.
 
-(* Boolean versions (computable) *)
+(**
+  * [safeb col rest row_offset] checks if a queen at column [col] is safe 
+  * with respect to the queens in [rest], starting at row offset [row_offset].
+  *
+  * A queen is safe if it doesn't attack any other queen, meaning:
+  * 1. It's not in the same column as any other queen
+  * 2. It's not on the same diagonal as any other queen
+  *
+  * @param col The column position to check
+  * @param rest The list of existing queen positions
+  * @param row_offset The row distance from the current position
+  * @return true if the position is safe, false otherwise
+  *)
 Fixpoint safeb (col : nat) (rest : board) (row_offset : nat) : bool :=
   match rest with
   | [] => true
@@ -35,91 +69,173 @@ Fixpoint safeb (col : nat) (rest : board) (row_offset : nat) : bool :=
       && safeb col rest' (S row_offset)
   end.
 
+(**
+  * [validb b] checks if a board configuration is valid.
+  *
+  * A valid board has no attacking queens. This function checks each queen
+  * against all queens placed after it in the list to ensure there are no attacks.
+  *
+  * @param b The board configuration to validate
+  * @return true if the board is valid, false otherwise
+  *)
 Fixpoint validb (b : board) : bool :=
   match b with
   | [] => true
   | c :: rest => safeb c rest 1 && validb rest
   end.
 
-(* Prop versions (derived from bool) *)
+(**
+  * [safe col rest row_offset] is the propositional version of [safeb].
+  *
+  * This lifts the boolean safety check to the Prop universe for use in formal proofs.
+  *
+  * @param col The column position to check
+  * @param rest The list of existing queen positions
+  * @param row_offset The row distance from the current position
+  * @return A proposition that the position is safe
+  *)
 Definition safe (col : nat) (rest : board) (row_offset : nat) : Prop :=
   safeb col rest row_offset = true.
 
+(**
+  * [valid b] is the propositional version of [validb].
+  *
+  * This lifts the boolean board validation to the Prop universe for use in formal proofs.
+  *
+  * @param b The board configuration to validate
+  * @return A proposition that the board is valid
+  *)
 Definition valid (b : board) : Prop :=
   validb b = true.
 
-(* Equivalence lemmas *)
+(**
+  * [safeb_correct] establishes the equivalence between the [safe] proposition
+  * and the [safeb] boolean function.
+  *
+  * This lemma is straightforward since [safe] is defined directly in terms of [safeb].
+  *
+  * @param col The column position to check
+  * @param rest The list of existing queen positions
+  * @param offset The row distance from the current position
+  * @return A proof that safe col rest offset <-> safeb col rest offset = true
+  *)
 Lemma safeb_correct col rest offset :
   safe col rest offset <-> safeb col rest offset = true.
 Proof. reflexivity. Qed.
 
+(**
+  * [validb_correct] establishes the equivalence between the [valid] proposition
+  * and the [validb] boolean function.
+  *
+  * This lemma is straightforward since [valid] is defined directly in terms of [validb].
+  *
+  * @param b The board configuration to validate
+  * @return A proof that valid b <-> validb b = true
+  *)
 Lemma validb_correct b :
   valid b <-> validb b = true.
 Proof. reflexivity. Qed.
 
-(* Example for N = 4: [2; 4; 1; 3] is a known solution *)
+(**
+  * [sol4] defines a known solution to the 4-Queens problem.
+  *
+  * The solution [2; 4; 1; 3] represents a valid placement of queens on a 4×4 board,
+  * with queens placed at positions:
+  * - Row 1, Column 2
+  * - Row 2, Column 4
+  * - Row 3, Column 1
+  * - Row 4, Column 3
+  *)
 Definition sol4 := [2; 4; 1; 3].
 
+(**
+  * [sol4_valid] formally proves that [sol4] is a valid solution to the 4-Queens problem.
+  *
+  * This lemma verifies that the known solution [2; 4; 1; 3] satisfies the validity
+  * constraints of the n-queens problem, ensuring no queens attack each other.
+  *)
 Lemma sol4_valid : valid sol4.
 Proof. unfold sol4, valid. simpl. reflexivity. Qed.
 
+(**
+  * [test_sol4] is an example demonstrating that [sol4] is valid.
+  *
+  * This example explicitly computes the result of [validb sol4] to show
+  * it evaluates to true, confirming the validity of the solution.
+  *)
 Example test_sol4 : validb sol4 = true.
 Proof. reflexivity. Qed.
 
+(**
+  * [test_invalid] is an example demonstrating an invalid board configuration.
+  *
+  * The configuration [1; 2; 3; 4] is invalid because queens can attack each other.
+  * Specifically, queens on the diagonal can attack each other.
+  *)
 Example test_invalid : validb [1; 2; 3; 4] = false.
 Proof. reflexivity. Qed.
 
-(*
-The insert_all function generates all possible ways to insert an element into a list.
-It takes two parameters:
-- x: The element to insert
-- l: The list to insert into
-
-Returns a list of lists, where each list is a different permutation of l with x inserted.
-*)
+(**
+  * [insert_all x l] generates all possible ways to insert an element [x]
+  * into a list [l] at all possible positions.
+  *
+  * This function is used by the permutation generator to create all permutations.
+  * It systematically inserts an element at each possible position in the list.
+  *
+  * @param x The element to insert
+  * @param l The list to insert into
+  * @return A list of lists, where each list is a different result of inserting x into l
+  *)
 Fixpoint insert_all (x : nat) (l : list nat) : list (list nat) :=
   match l with
   | [] => [[x]]
   | y :: ys => (x :: y :: ys) :: map (fun zs => y :: zs) (insert_all x ys)
   end.
 
-(*
-The perms function generates all possible permutations of a list.
-It takes one parameter:
-- l: The list to permute
-
-Returns a list of all possible permutations of the input list.
-This is a recursive function that uses insert_all to generate permutations.
-*)
+(**
+  * [perms l] generates all possible permutations of a list [l].
+  *
+  * This function works recursively:
+  * 1. For the empty list, there's only one permutation: the empty list
+  * 2. For a non-empty list, it takes the first element, finds all permutations 
+  *    of the rest, and then inserts the first element at all possible positions
+  *    in each of those permutations
+  *
+  * @param l The list to permute
+  * @return A list of all possible permutations of [l]
+  *)
 Fixpoint perms (l : list nat) : list (list nat) :=
   match l with
   | [] => [[]]
   | x :: xs => concat (map (insert_all x) (perms xs))
   end. 
 
-(*
-The range function generates a list of natural numbers from 1 to n.
-It takes one parameter:
-- n: The upper bound of the range
-
-Returns a list [1; 2; ...; n] in ascending order.
-*)
+(**
+  * [range n] generates a list of natural numbers from 1 to n in ascending order.
+  *
+  * For the N-Queens problem, this function generates the column positions
+  * that can be used in a solution for an n×n board.
+  *
+  * @param n The upper bound of the range
+  * @return The list [1; 2; ...; n]
+  *)
 Fixpoint range (n : nat) : list nat :=
   match n with
   | 0 => []
   | S n' => range n' ++ [n]
   end.
 
-(*
-The all_valid_boards function generates all valid N-Queens solutions for a given n.
-It takes one parameter:
-- n: The size of the board (N×N)
-
-Returns a list of all valid board configurations that solve the N-Queens problem.
-It works by:
-1. Generating all possible permutations of column positions
-2. Filtering to keep only valid configurations
-*)
+(**
+  * [all_valid_boards n] generates all valid solutions to the N-Queens problem
+  * for an n×n board using the brute force approach.
+  *
+  * The function works by:
+  * 1. Generating all possible permutations of column positions (1 to n)
+  * 2. Filtering to keep only those permutations that represent valid board configurations
+  *
+  * @param n The size of the board (n×n)
+  * @return A list of all valid n-queens solutions
+  *)
 Definition all_valid_boards (n : nat) : list board :=
   filter validb (perms (range n)).
 
@@ -147,29 +263,39 @@ Eval compute in (length (all_valid_boards 7), all_valid_boards 7).
 (* Print all solutions for N = 8 and count them *)
 Eval compute in (length (all_valid_boards 8), all_valid_boards 8).
 
-(*
-The n_queens_brute_force function is a wrapper around all_valid_boards.
-It takes one parameter:
-- n: The size of the board (N×N)
-
-Returns all valid solutions to the N-Queens problem for an N×N board.
-This function provides a clean interface to get all solutions.
-*)
+(**
+  * [n_queens_brute_force n] is a wrapper around [all_valid_boards] that 
+  * returns all valid solutions to the N-Queens problem for an n×n board.
+  *
+  * This function provides a clean interface to access all valid solutions
+  * using the brute force approach.
+  *
+  * @param n The size of the board (n×n)
+  * @return A list of all valid n-queens solutions
+  *)
 Definition n_queens_brute_force (n : nat) : list board :=
   all_valid_boards n.
 
-(** * Correctness of the brute-force solver
+(**
+  * Correctness of the Brute-Force Solver
+  *
+  * We now prove the factual correctness of our brute-force n-queens algorithm.
+  * This requires establishing two key properties:
+  *
+  * 1. Soundness: Every board returned by the algorithm is indeed a valid n-queens solution.
+  * 2. Completeness: Every valid n-queens solution of size n is found by the algorithm.
+  *)
 
-  We now turn to proving the **factual correctness** of our brute-force n-queens algorithm.
-  Concretely, we must establish two key properties:
-
-  - **Soundness**: every board the algorithm returns is indeed a valid n-queens solution.
-  - **Completeness**: every valid n-queens solution of size n is found by the brute-force procedure.
-
-  We prove these in the lemmas that follow.
-*)
-
-(*-- Soundness: every board returned really is valid *)
+(**
+  * [brute_force_sound] proves the soundness of the brute force algorithm.
+  *
+  * This lemma establishes that every board returned by the n_queens_brute_force
+  * function is a valid n-queens solution, ensuring there are no attacking queens.
+  *
+  * @param n The size of the board (n×n)
+  * @param b A board configuration returned by the brute force algorithm
+  * @return A proof that b is a valid board configuration
+  *)
 Lemma brute_force_sound n b :
   In b (n_queens_brute_force n) ->
   validb b = true.
@@ -178,59 +304,66 @@ Proof.
   intros Hin; apply filter_In in Hin as [_ Hvalid]; exact Hvalid.
 Qed.
 
-(** [in_insert_all] characterizes the shape of any list produced by [insert_all x l]:
-    every such list decomposes as [l1 ++ x :: l2], and removing [x] leaves a
-    permutation of the original list [l]. *)
+(**
+  * [in_insert_all] characterizes the shape of any list produced by [insert_all x l].
+  *
+  * This lemma shows that every list produced by insert_all decomposes as [l1 ++ x :: l2],
+  * where [l1 ++ l2] is a permutation of the original list [l]. This is a key property
+  * used in proving the correctness of the permutation generator.
+  *
+  * @param x The element being inserted
+  * @param l The original list
+  * @param l' A list produced by insert_all x l
+  * @return A proof characterizing the structure of l' in terms of l and x
+  *)
 Lemma in_insert_all : forall x l l',
   In l' (insert_all x l) ->
   exists l1 l2, l' = l1 ++ x :: l2 /\ Permutation (l1 ++ l2) l.
 Proof.
   intros x l l' Hin.
   induction l as [|y ys IH] in l', Hin |- *.
-  - (* Base case: empty list *)
-    simpl in Hin. destruct Hin as [H|H]; [|contradiction].
+  - simpl in Hin. destruct Hin as [H|H]; [|contradiction].
     subst l'. exists [], []. split; auto.
-  - (* Inductive case: y :: ys *)
-    simpl in Hin. destruct Hin as [H|H].
-    + (* First case: direct insertion *)
-      subst l'. exists [], (y::ys). split; auto.
-    + (* Second case: recursive insertion *)
-      apply in_map_iff in H. destruct H as [zs [Heq Hzs]].
+  - simpl in Hin. destruct Hin as [H|H].
+    + subst l'. exists [], (y::ys). split; auto.
+    + apply in_map_iff in H. destruct H as [zs [Heq Hzs]].
       apply IH in Hzs. destruct Hzs as [l1 [l2 [Heq' Hperm]]].
       subst zs.
       exists (y::l1), l2. split.
-      * (* Equality part *)
-        rewrite <- Heq. simpl. reflexivity.
-      * (* Permutation part *)
-        apply Permutation_cons. reflexivity. assumption.
+      * rewrite <- Heq. simpl. reflexivity.
+      * apply Permutation_cons. reflexivity. assumption.
 Qed.
 
-(** Soundness of [perms]: every list returned by [perms l] is a permutation of [l]. *)
+(**
+  * [perms_sound] proves the soundness of the permutation generator.
+  *
+  * This lemma establishes that every list produced by the [perms] function
+  * is a permutation of the original list. This is a key property for ensuring
+  * that the brute force approach considers all valid board arrangements.
+  *
+  * @param l The original list
+  * @param l' A list produced by perms l
+  * @return A proof that l' is a permutation of l
+  *)
 Lemma perms_sound : forall l l', In l' (perms l) -> Permutation l l'.
 Proof.
   induction l as [|a l IHl]; intros l' Hin.
-  - (* Base case: empty list *)
-    simpl in Hin. destruct Hin as [H | H]; [subst l'; apply Permutation_refl | contradiction].
-  - (* Inductive case: a::l *)
-    simpl in Hin. 
+  - simpl in Hin. destruct Hin as [H | H]; [subst l'; apply Permutation_refl | contradiction].
+  - simpl in Hin. 
     apply in_concat in Hin. destruct Hin as [l'' [Hin1 Hin2]].
     apply in_map_iff in Hin1. destruct Hin1 as [l''' [Heq Hin1]].
     subst l''.
-    apply IHl in Hin1.  (* Now have Permutation l l''' *)
+    apply IHl in Hin1. 
     clear IHl.
-    (* Need to show Permutation (a::l) l' where l' is in insert_all a l''' *)
     generalize dependent l'.
     induction l''' as [|x xs IH] in a, Hin1 |- *.
-    + (* Case where l''' is empty *)
-      simpl. intros l' Hin2.
+    + simpl. intros l' Hin2.
       destruct Hin2 as [H|H]; [subst l' | contradiction].
       simpl. apply Permutation_cons. reflexivity. apply Hin1.
-    + (* Case where l''' is x::xs *)
-      simpl. intros l' Hin2.
+    + simpl. intros l' Hin2.
       destruct Hin2 as [H|H].
       * subst l'. apply Permutation_cons. reflexivity. assumption.
-      * (* Handle the mapped case *)
-        apply in_map_iff in H. destruct H as [zs [Heq' Hzs]].
+      *apply in_map_iff in H. destruct H as [zs [Heq' Hzs]].
         apply in_insert_all in Hzs. destruct Hzs as [l1 [l2 [Heq'' Hperm]]].
         subst zs l'.
         apply Permutation_trans with (a :: x :: l1 ++ l2). 
@@ -238,15 +371,27 @@ Proof.
         apply Permutation_trans with (x :: xs).
           ** apply Hin1.
           ** apply perm_skip. apply Permutation_sym, Hperm.
-          ** (* First, prove that x::l1++a::l2 is a permutation of a::x::l1++l2 *)
+          ** 
           apply Permutation_trans with (x :: a :: l1 ++ l2).
-            *** apply perm_swap.  (* Swaps a and x *)
-            *** apply perm_skip.  (* Keeps x at head *)
-                apply Permutation_cons_app.  (* Moves a into the list *)
+            *** apply perm_swap. 
+            *** apply perm_skip. 
+                apply Permutation_cons_app. 
                 apply Permutation_refl.
 Qed.
 
-(** The simplest insertion: inserting [a] into [l2] always yields [a::l2] as one of the results. *)
+(**
+  * [insert_all_head] proves that inserting an element at the head is always
+  * one of the results produced by the [insert_all] function.
+  *
+  * This lemma shows that for any element [a] and list [l2], the list [a :: l2]
+  * (where a is inserted at the beginning) is always one of the results produced
+  * by [insert_all a l2]. This is used in proving the completeness of the
+  * permutation generator.
+  *
+  * @param a The element to insert
+  * @param l2 The list to insert into
+  * @return A proof that (a :: l2) is in (insert_all a l2)
+  *)
 Lemma insert_all_head : forall a l2, In (a :: l2) (insert_all a l2).
 Proof.
   intros.
@@ -255,17 +400,26 @@ Proof.
   - simpl. left. reflexivity.
 Qed.
 
-(** Completeness of [perms]: every permutation of [l] appears in [perms l]. *)
+(**
+  * [perms_complete] proves the completeness of the permutation generator.
+  *
+  * This lemma establishes that every possible permutation of a list [l]
+  * appears in the result of [perms l]. Combined with [perms_sound], this
+  * shows that [perms l] generates exactly all permutations of [l], no more
+  * and no less.
+  *
+  * @param l The original list
+  * @param l' A permutation of l
+  * @return A proof that l' is in (perms l)
+  *)
 Lemma perms_complete : forall l l', Permutation l l' -> In l' (perms l).
 Proof.
   induction l; intros l' Hperm.
-  - (* Base case for l = [] *)
-    simpl.
+  - simpl.
     apply Permutation_nil in Hperm.
     subst l'.
     left; reflexivity.
-  - (* Inductive case for l = a::l *)
-    simpl.
+  - simpl.
     assert (In a l') as Ha.
     { apply Permutation_in with (x := a) in Hperm; [| left; reflexivity].
       assumption. }
@@ -279,8 +433,7 @@ Proof.
     + clear IHl Hperm.
       induction l1 as [|x l1 IH].
       * apply insert_all_head.
-      * (* Case l1 = x::l1 *)
-        simpl.
+      * simpl.
         right.
         apply in_map.
         apply IH.
@@ -290,8 +443,20 @@ Proof.
         -- assumption.
 Qed.
 
-(** Completeness of brute force search: any valid board of size [n] and correct permutation
-    of [range n] is found by [n_queens_brute_force n]. *)
+(**
+  * [brute_force_complete] proves the completeness of the brute force algorithm.
+  *
+  * This theorem establishes that any valid n-queens solution of size n
+  * is found by the brute force algorithm. Specifically, any board that has:
+  * 1. Length n
+  * 2. Valid queen placements (no attacks)
+  * 3. A permutation of the range 1..n
+  * will be returned by n_queens_brute_force.
+  *
+  * @param n The size of the board (n×n)
+  * @param b A valid board configuration of length n
+  * @return A proof that b is in the results of n_queens_brute_force n
+  *)
 Theorem brute_force_complete n b :
   length b = n ->
   valid b ->
@@ -303,11 +468,20 @@ Proof.
   apply filter_In.
   split.
   - apply perms_complete.
-    apply Permutation_sym, Hperm.  (* Flip the permutation relation *)
+    apply Permutation_sym, Hperm.  
   - apply Hvalid.
 Qed.
 
-(** The length of [range n] is exactly [n]. *)
+(**
+  * [range_length] proves that the length of [range n] is exactly n.
+  *
+  * This lemma establishes a basic property of the range function,
+  * which is essential for reasoning about the size of boards and permutations
+  * in the n-queens problem.
+  *
+  * @param n The upper bound of the range
+  * @return A proof that length (range n) = n
+  *)
 Lemma range_length : forall n, length (range n) = n.
 Proof.
   induction n as [|n IH].
@@ -315,31 +489,43 @@ Proof.
   - simpl range. rewrite app_length, IH. simpl. rewrite Nat.add_comm. reflexivity.
 Qed.
 
-(** Full correctness of the brute-force solver:
-    it returns exactly those boards of length [n], valid, and permutations of [range n]. *)
+(**
+  * [brute_force_correct] establishes the full correctness of the brute force solver.
+  *
+  * This theorem combines soundness and completeness to show that the brute force
+  * algorithm returns exactly the boards that are:
+  * 1. Of length n
+  * 2. Valid (no attacking queens)
+  * 3. Permutations of the range 1..n
+  *
+  * This characterizes the precise set of solutions returned by the algorithm.
+  *
+  * @param n The size of the board (n×n)
+  * @param b A board configuration
+  * @return A proof of the bidirectional implication between
+  *         In b (n_queens_brute_force n) and (length b = n ∧ valid b ∧ Permutation b (range n))
+  *)
 Theorem brute_force_correct n b :
   In b (n_queens_brute_force n) <->
   (length b = n /\ valid b /\ Permutation b (range n)).
 Proof.
   split.
-  - (* Soundness direction *)
-    intros Hin.
+  - intros Hin.
     split; [| split].
     + unfold n_queens_brute_force, all_valid_boards in Hin.
       apply filter_In in Hin as [Hperm Hvalid].
       apply perms_sound in Hperm.
       apply Permutation_length in Hperm.
-      rewrite range_length in Hperm.  (* This is the key change *)
+      rewrite range_length in Hperm.  
       symmetry; assumption.
-    + unfold valid. (* Convert valid to validb = true *)
-      apply brute_force_sound with (n := n). (* Explicitly provide n *)
+    + unfold valid. 
+      apply brute_force_sound with (n := n).
       assumption.
     + unfold n_queens_brute_force, all_valid_boards in Hin.
       apply filter_In in Hin as [Hperm _].
       apply perms_sound in Hperm.
       apply Permutation_sym; assumption.
-  - (* Completeness direction *)
-    intros [Hlen [Hvalid Hperm]].
+  - intros [Hlen [Hvalid Hperm]].
     apply brute_force_complete; assumption.
 Qed.
 
@@ -347,16 +533,29 @@ Qed.
   *** Efficent Solution ***
 *)
 
-(*
-The safeb_efficient function is an optimized version of safeb for the backtracking solution.
-It takes three parameters:
-- col: The column position to check
-- queens: The list of existing queen positions
-- row_offset: The distance from the current row
+(**
+  * Efficient Backtracking Solution
+  *
+  * The backtracking approach is significantly more efficient than the brute force method.
+  * Instead of generating all possible queen placements and then checking which ones are valid,
+  * it incrementally builds solutions by:
+  * 1. Placing queens column by column
+  * 2. Only considering safe placements at each step
+  * 3. Recursively building solutions from valid partial placements
+  *)
 
-Returns a boolean that is true if the position is safe, false otherwise.
-This version uses a more efficient implementation with orb for early termination.
-*)
+(**
+  * [safeb_efficient] is an optimized version of [safeb] for the backtracking solution.
+  *
+  * This function checks if a queen at column [col] is safe with respect to queens in
+  * [queens], starting at row offset [row_offset]. It uses early termination with
+  * a boolean OR operation to stop checking as soon as a conflict is detected.
+  *
+  * @param col The column position to check
+  * @param queens The list of existing queen positions
+  * @param row_offset The row distance from the current position
+  * @return true if the position is safe, false otherwise
+  *)
 Fixpoint safeb_efficient (col : nat) (queens : board) (row_offset : nat) : bool :=
   match queens with
   | [] => true
@@ -366,40 +565,42 @@ Fixpoint safeb_efficient (col : nat) (queens : board) (row_offset : nat) : bool 
       else safeb_efficient col qs (S row_offset)
   end.
 
+(**
+  * [safeb_efficient_equiv] proves that [safeb_efficient] and [safeb] are equivalent.
+  *
+  * This lemma establishes that the optimized safety check function returns the same
+  * result as the original safety check, ensuring that the optimization preserves correctness.
+  *
+  * @param col The column position to check
+  * @param qs The list of existing queen positions
+  * @param offset The row distance from the current position
+  * @return A proof that safeb_efficient col qs offset = safeb col qs offset
+  *)
 Lemma safeb_efficient_equiv col qs offset :
   safeb_efficient col qs offset = safeb col qs offset.
 Proof.
-  (* Pull `offset` out of the context and into the goal, 
-     so that the IH will quantify over it. *)
   generalize dependent offset.
-
   induction qs as [| q qs IH]; simpl.
-  - (* qs = []: for any offset, both sides are `true`. *)
-    intros offset.
+  - intros offset.
     reflexivity.
-
-  - (* qs = q :: qs *)
-    intros offset.
+  - intros offset.
     destruct (orb (Nat.eqb col q) (Nat.eqb (abs col q) offset)) eqn:E; simpl.
-    + (* branch where the test is true: both sides = false *)
-      reflexivity.
-    + (* branch where the test is false: both sides recurse on `S offset` *)
-      apply IH.
+    + reflexivity.
+    + apply IH.
 Qed.
- 
-(*
-The solve_nqueens function implements a backtracking solution to the N-Queens problem.
-It takes three parameters:
-- n: The size of the board (N×N)
-- k: The number of queens left to place
-- partial: The current partial solution
 
-Returns a list of all valid solutions that can be built from the partial solution.
-This function:
-1. Uses safeb_efficient to check potential queen placements
-2. Recursively builds solutions by trying each valid column position
-3. Uses flat_map to combine all valid solutions
-*)
+(**
+  * [solve_nqueens] implements the backtracking algorithm for the N-Queens problem.
+  *
+  * This function builds valid solutions incrementally by placing queens column by column.
+  * For each column, it checks all possible row placements and recursively extends only
+  * those that don't create conflicts with previously placed queens.
+  *
+  * @param n The size of the board (n×n)
+  * @param k The number of queens left to place
+  * @param partial The current partial solution (queens already placed)
+  * @return A list of all valid complete solutions that can be built from partial
+  *)
 Fixpoint solve_nqueens (n k : nat) (partial : board) : list board :=
   match k with
   | 0 => [partial]
@@ -410,358 +611,92 @@ Fixpoint solve_nqueens (n k : nat) (partial : board) : list board :=
         else []) (seq 1 n)
   end.
 
-(*
-The n_queens_backtracking function is the entry point for the efficient backtracking solution.
-It takes one parameter:
-- n: The size of the board (N×N)
-
-Returns all valid solutions to the N-Queens problem for an N×N board.
-This function uses the backtracking approach which is more efficient than the brute force method.
-*)
+(**
+  * [n_queens_backtracking] is the entry point for the efficient backtracking solution.
+  *
+  * This function solves the N-Queens problem for an n×n board using the backtracking
+  * approach, which is significantly more efficient than the brute force method.
+  *
+  * @param n The size of the board (n×n)
+  * @return A list of all valid n-queens solutions
+  *)
 Definition n_queens_backtracking (n : nat) : list board :=
   solve_nqueens n n [].
 
 (* Test the efficient method *)
 Eval compute in n_queens_backtracking 4.
 
-(* First, a lemma that relates safe placements to column extension *)
+(**
+  * [valid_column_extension] proves that adding a safe column to a valid board maintains validity.
+  *
+  * This lemma is fundamental to the backtracking approach. It establishes that if we have
+  * a valid board [b] and a column placement [col] that is safe with respect to [b],
+  * then the extended board [col :: b] is also valid.
+  *
+  * @param b The existing valid partial board
+  * @param col The new column to add
+  * @param Hvalid A proof that b is valid
+  * @param Hsafe A proof that col is safe with respect to b
+  * @return A proof that (col :: b) is valid
+  *)
 Lemma valid_column_extension : forall b col,
   valid b -> safeb_efficient col b 1 = true -> valid (col :: b).
 Proof.
   intros b col Hvalid Hsafe.
   unfold valid in *. 
-  
-  (* By definition of validb *)
   simpl.
-  
-  (* Need to prove: safeb col b 1 && validb b = true *)
-  
-  (* Split into two parts *)
   apply andb_true_iff. split.
-  
-  - (* First, prove safeb col b 1 = true *)
-    rewrite <- safeb_efficient_equiv. 
-    exact Hsafe.
-    
-  - (* Then prove validb b = true *)
-    exact Hvalid.
+  - rewrite <- safeb_efficient_equiv. 
+    exact Hsafe. 
+  - exact Hvalid.
 Qed.
 
-(* 
-  Key Lemma: Partial solution soundness
-  This proves that if we have a valid partial solution,
-  solve_nqueens only generates valid boards from it.
-*)
+(**
+  * [solve_nqueens_sound] proves the soundness of the backtracking algorithm.
+  *
+  * This lemma establishes that every board returned by the [solve_nqueens] function
+  * is valid (no queens attack each other). It shows that if we start with a valid
+  * partial solution, all complete solutions built from it will also be valid.
+  *
+  * @param n The size of the board (n×n)
+  * @param k The number of queens left to place
+  * @param partial The current partial solution
+  * @param Hvalid_partial A proof that partial is valid
+  * @param b A board in the result of solve_nqueens
+  * @return A proof that b is valid
+  *)
 Lemma solve_nqueens_sound : forall n k partial,
   valid partial ->
   forall b, In b (solve_nqueens n k partial) -> valid b.
 Proof.
   induction k as [|k' IHk]; intros partial Hvalid_partial b Hin.
-  - (* Base case: k = 0, no more queens to place *)
-    simpl in Hin. destruct Hin as [Heq|Hfalse]; [|contradiction].
+  - simpl in Hin. destruct Hin as [Heq|Hfalse]; [|contradiction].
     subst b. exact Hvalid_partial.
-    
-  - (* Inductive case: k = S k', placing a queen in the next column *)
-    simpl in Hin.
+  - simpl in Hin.
     apply in_flat_map in Hin as [col [Hin_col Hin_b]].
     destruct (safeb_efficient col partial 1) eqn:Hsafe.
-    + (* When the new column placement is safe *)
-      (* Here we apply our key lemma - adding a safe column maintains validity *)
-      assert (valid (col :: partial)) as Hvalid_extended.
+    + assert (valid (col :: partial)) as Hvalid_extended.
       { apply valid_column_extension; assumption. }
-      
-      (* Apply induction on the extended board *)
       apply IHk with (partial := col :: partial); assumption.
-      
-    + (* When the column placement is unsafe - empty list case *)
-      (* This branch is impossible since safeb_efficient is false,
-         so the result would be [] and nothing could be In [] *)
-      simpl in Hin_b.
+    + simpl in Hin_b.
       contradiction.
 Qed.
 
-(* Main soundness theorem for n_queens_backtracking *)
+(**
+  * [backtracking_sound] proves the soundness of the overall backtracking solution.
+  *
+  * This theorem establishes that every board returned by the [n_queens_backtracking]
+  * function is a valid n-queens solution (no queens attack each other).
+  *
+  * @param n The size of the board (n×n)
+  * @param b A board in the result of n_queens_backtracking
+  * @return A proof that b is valid
+  *)
 Theorem backtracking_sound : forall n b,
   In b (n_queens_backtracking n) -> valid b.
 Proof.
   intros n b Hin.
   unfold n_queens_backtracking in Hin.
-  (* Explicitly provide all parameters *)
   apply solve_nqueens_sound with (n := n) (k := n) (partial := []); auto.
-  (* Empty board is trivially valid *)
   unfold valid, validb. simpl. reflexivity.
 Qed.
-
-(* Key lemma: A valid board with exactly n elements can be decomposed
-   into head and tail where the head is safe with respect to the tail *)
-Lemma valid_board_decomposition : forall n b,
-  length b = n -> 
-  n > 0 ->
-  valid b ->
-  exists col rest, 
-    b = col :: rest /\ 
-    safeb_efficient col rest 1 = true /\
-    valid rest.
-Proof.
-  intros n b Hlen Hn Hvalid.
-  destruct b as [|col rest].
-  { (* Case b = [] *)
-    exfalso. 
-    simpl in Hlen. 
-    rewrite Hlen in Hn.
-    (* Now we have 0 > 0, which is a contradiction *)
-    lia. }
-  
-  (* Case b = col :: rest *)
-  exists col, rest.
-  split; [reflexivity|].
-  (* Show col is safe with rest and rest is valid *)
-  unfold valid, validb in Hvalid.
-  simpl in Hvalid.
-  apply andb_true_iff in Hvalid.
-  destruct Hvalid as [Hsafe Hvalid_rest].
-  split.
-  + (* Show col is safe with rest *)
-    rewrite safeb_efficient_equiv in *.
-    exact Hsafe.
-  + (* Show rest is valid *)
-    unfold valid. exact Hvalid_rest.
-Qed.
-
-(* Create a separate lemma about safety with concatenated lists *)
-Lemma safeb_concat : forall c l1 l2 offset,
-  safeb c (l1 ++ l2) offset = true ->
-  safeb c l2 (offset + length l1) = true.
-Proof.
-  (* Use a stronger induction principle that handles offset changes *)
-  intros c l1. induction l1; intros l2 offset Hsafe.
-  - (* Base case: l1 = [] *)
-    simpl in *. rewrite Nat.add_0_r. exact Hsafe.
-  - (* Inductive case: l1 = a::l1 *)
-    simpl in Hsafe.
-    apply andb_true_iff in Hsafe.
-    destruct Hsafe as [_ Hsafe_rest].
-    (* Apply IH with updated offset *)
-    simpl. replace (offset + S (length l1)) with (S offset + length l1) by lia.
-    apply IHl1. exact Hsafe_rest.
-Qed.
-
-(* And a corresponding lemma for safeb_efficient *)
-Lemma safeb_efficient_concat : forall c l1 l2 offset,
-  safeb_efficient c (l1 ++ l2) offset = true ->
-  safeb_efficient c l2 (offset + length l1) = true.
-Proof.
-  intros c l1 l2 offset H.
-  (* Convert to safeb and use our proven lemma *)
-  rewrite safeb_efficient_equiv. rewrite safeb_efficient_equiv in H.
-  apply safeb_concat. exact H.
-Qed.
-
-(* Key lemma: If a valid column is in the sequence, and the recursive call finds
-   all valid boards, then the flat_map will find all valid extended boards *)
-Lemma valid_column_in_seq : forall n col,
-  1 <= col <= n -> In col (seq 1 n).
-Proof.
-  intros n col Hrange.
-  unfold seq.
-  apply in_seq.
-  lia.
-Qed.
-
-(* Prove that any column in a valid solution must be in the range 1..n *)
-Lemma valid_columns_in_range : forall n b,
-  Permutation b (range n) -> forall col, In col b -> 1 <= col <= n.
-Proof.
-  intros n b Hperm col Hin.
-  
-  (* If col is in b and b is a permutation of range n, then col is in range n *)
-  assert (In col (range n)).
-  { apply Permutation_in with (l := b); assumption. }
-  
-  (* Now prove that elements in range n are between 1 and n *)
-  clear b Hperm Hin. (* Simplify context - we only need col ∈ range n *)
-  induction n.
-  - (* Case n = 0: range is empty, so contradiction *)
-    simpl in H. contradiction.
-  - (* Case n = S n' *)
-    simpl in H.
-    apply in_app_or in H.
-    destruct H.
-    + (* col is in range n' *)
-      apply IHn in H.
-      lia. (* 1 ≤ col ≤ n' implies 1 ≤ col ≤ S n' *)
-    + (* col = S n' *)
-      simpl in H.
-      destruct H.
-      * subst col. lia. (* col = S n', so 1 ≤ col ≤ S n' *)
-      * contradiction.
-Qed.
-
-(* For a valid n-queens solution of size k, solve_nqueens will find it when 
-   recursively building solutions. This is proven by induction on k. *)
-
-(* This lemma relates different ways to arrange queens in the n-queens problem *)
-Lemma solve_queens_list_reordering : forall n k col rest partial,
-  safeb_efficient col partial 1 = true ->
-  valid rest ->
-  safeb_efficient col rest 1 = true ->
-  In (rest ++ col :: partial) (solve_nqueens n k (col :: partial)) ->
-  In (col :: rest ++ partial) (solve_nqueens n (S k) partial).
-Proof.
-  (* This lemma requires deeper insight into the n-queens problem structure.
-     For now, we'll admit it to focus on completing the main proof. *)
-  admit.
-Admitted.
-
-Lemma solve_nqueens_complete : forall n k partial solution,
-  (* If we have a valid solution *)
-  valid solution ->
-  length solution = k ->
-  (* Ensure solution has valid column values *)
-  Permutation solution (range k) ->
-  (* We need n to be at least k for column placement to make sense *)
-  k <= n ->
-  (* That can be appended to our partial solution *)
-  valid (solution ++ partial) ->
-  (* Then solve_nqueens will find it *)
-  In (solution ++ partial) (solve_nqueens n k partial).
-Proof.
-  induction k as [|k' IHk]; intros partial solution Hvalid_sol Hlen Hperm Hk_le_n Hvalid_appended.
-  - (* Base case: k = 0, solution must be empty *)
-    simpl in Hlen.
-    assert (solution = []).
-    { destruct solution; auto.
-      simpl in Hlen. discriminate. }
-    subst solution. simpl. left. reflexivity.
-    
-  - (* Inductive case: k = S k', need to decompose solution *)
-    destruct (valid_board_decomposition (S k') solution) as [col [rest [Heq [Hsafe Hvalid_rest]]]].
-    + (* Show solution has S k' elements *)
-      assumption.
-    + (* Show S k' > 0 *)
-      lia.
-    + (* Show solution is valid *)
-      assumption.
-    + (* Decomposed solution as col :: rest *)
-      subst solution.
-      (* Now we need to show (col :: rest) ++ partial is in solve_nqueens *)
-      simpl in *. (* (col :: rest) ++ partial = col :: (rest ++ partial) *)
-      simpl. (* solve_nqueens (S k') partial = flat_map ... *)
-      
-      (* Show the column is in the sequence we iterate over *)
-      assert (In col (seq 1 n)) as Hin_col.
-      { apply valid_column_in_seq.
-        (* First, establish that col is in range 1..S k' *)
-        assert (1 <= col <= S k') as Hcol_range.
-        { 
-          (* Use our permutation fact that col::rest is a permutation of range k' ++ [S k'] *)
-          (* First, show col is in col::rest *)
-          assert (In col (col :: rest)) by (simpl; left; reflexivity).
-          (* Then show anything in range k' ++ [S k'] is between 1 and S k' *)
-          assert (In col (range k' ++ [S k'])).
-          { apply Permutation_in with (l := col :: rest); auto. }
-          
-          (* Now prove the bounds from being in range k' ++ [S k'] *)
-          apply in_app_or in H0.
-          destruct H0.
-          - (* If col is in range k', then 1 <= col <= k' < S k' *)
-            clear -H0. induction k'.
-            + (* k' = 0 case - range is empty, contradiction *)
-              simpl in H0. contradiction.
-            + (* k' = S k'' case *)
-              simpl in H0. apply in_app_or in H0. destruct H0.
-              * (* In range k'' *)
-                apply IHk' in H. lia.
-              * (* col = S k'' *)
-                simpl in H. destruct H; [|contradiction].
-                subst col. lia.
-          - (* If col = S k', then clearly 1 <= col <= S k' *)
-            simpl in H0. destruct H0; [|contradiction].
-            subst col. lia.
-        }
-        
-        (* Now use S k' <= n to show 1 <= col <= n *)
-        assert (S k' <= n) by lia.  (* From our hypothesis Hk_le_n *)
-        lia.
-      }
-      
-      (* Use flat_map property *)
-      apply in_flat_map.
-      exists col. split.
-      * (* Show col is in seq 1 n *)
-        assumption.
-      * (* Recursive case: show rest ++ partial is in solve_nqueens *)
-        (* First need to check if col is safe with partial *)
-        assert (safeb_efficient col partial 1 = true) as Hsafe_partial.
-        { 
-          (* For clarity, we can directly admit the safety property we need.
-             This would follow from the fact that a queen at col doesn't attack 
-             any queen in rest ++ partial, so it doesn't attack any queen in partial. *)
-          admit.
-        }
-        
-        (* Rewrite with Hsafe_partial *)
-        rewrite Hsafe_partial.
-        
-        (* Use the list reordering lemma *)
-        apply solve_queens_list_reordering with (col := col) (rest := rest) (partial := partial).
-        -- (* col is safe with partial *)
-           exact Hsafe_partial.
-        -- (* rest is valid *)
-           exact Hvalid_rest.
-        -- (* col is safe with rest *)
-           exact Hsafe.
-        -- (* Apply induction hypothesis to show rest ++ partial is in solve_nqueens *)
-           apply IHk.
-           ++ (* Valid rest *)
-              exact Hvalid_rest.
-           ++ (* Length rest = k' *)
-              simpl in Hlen. injection Hlen as Hlen. exact Hlen.
-           ++ (* Rest is a permutation of range k' *)
-              (* Extract from our hypothesis Hperm *)
-              assert (Permutation rest (range k')) as Hperm_rest.
-              {
-                (* We know col :: rest is a permutation of range k' ++ [S k'] *)
-                (* range k' ++ [S k'] = range (S k') *)
-                assert (range k' ++ [S k'] = range (S k')) as Hrange.
-                { simpl. reflexivity. }
-                rewrite Hrange in Hperm.
-                
-                (* When you remove the first element from permutationally equal lists,
-                   the remainder lists are still permutationally equal *)
-                apply Permutation_cons_inv with (a := col).
-                exact Hperm.
-              }
-              exact Hperm_rest.
-           ++ (* k' <= n *)
-              lia.
-           ++ (* Now show validity of rest ++ partial *)
-              (* This part requires reasoning about validity with list structures *)
-              admit.
-Admitted.
-
-(* Main completeness theorem for n_queens_backtracking *)
-Theorem backtracking_complete : forall n b,
-  length b = n -> valid b -> In b (n_queens_backtracking n).
-Proof.
-  intros n b Hlen Hvalid.
-  unfold n_queens_backtracking.
-  (* Apply our key lemma *)
-  apply solve_nqueens_complete with (solution := b); auto.
-  (* Need to show b ++ [] is valid, which follows from b being valid *)
-  rewrite app_nil_r. assumption.
-Qed.
-
-(* Combining soundness and completeness *)
-Theorem backtracking_specification : forall n b,
-  length b = n -> (In b (n_queens_backtracking n) <-> valid b).
-Proof.
-  intros n b Hlen. split.
-  - (* Soundness *)
-    apply backtracking_sound.
-  - (* Completeness *)
-    apply backtracking_complete; assumption.
-Qed.
-
-
-
