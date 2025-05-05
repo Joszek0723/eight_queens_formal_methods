@@ -703,10 +703,29 @@ Proof.
   unfold valid, validb. simpl. reflexivity.
 Qed.
 
-
++(**
++ * [brute_force_count n] counts the total number of configurations examined
++ * by the brute force algorithm for an n×n board.
++ *
++ * This function directly measures the size of the search space explored
++ * by the brute force approach, which is equal to the number of all possible
++ * permutations of column positions 1 to n.
++ *
++ * @param n The size of the board (n×n)
++ * @return The number of configurations examined (n!)
++ *)
 Definition brute_force_count (n : nat) : nat :=
   length (perms (range n)).
 
++(**
++ * [sumn l] computes the sum of all natural numbers in a list.
++ *
++ * This helper function is used to calculate the total number of
++ * configurations examined by the backtracking algorithm.
++ *
++ * @param l A list of natural numbers
++ * @return The sum of all elements in the list
++ *)
 (* Sum of a list of nats *)
 Fixpoint sumn (l : list nat) : nat :=
   match l with
@@ -714,6 +733,19 @@ Fixpoint sumn (l : list nat) : nat :=
   | x :: xs => x + sumn xs
   end.
 
++(**
++ * [solve_nqueens_count n k partial] counts the total number of configurations
++ * examined when solving the N-Queens problem using backtracking.
++ *
++ * This function works similarly to the regular solve_nqueens, but instead of
++ * collecting solutions, it counts the number of positions examined, including
++ * both successful placements and pruned branches.
++ *
++ * @param n The size of the board (n×n)
++ * @param k The number of queens left to place
++ * @param partial The current partial solution (queens already placed)
++ * @return The number of configurations examined from this position
++ *)
 Fixpoint solve_nqueens_count (n k : nat) (partial : board) : nat :=
   match k with
   | 0 => 1 (* Count completed boards *)
@@ -725,6 +757,17 @@ Fixpoint solve_nqueens_count (n k : nat) (partial : board) : nat :=
       ) (seq 1 n))
   end.
 
++(**
++ * [backtracking_count n] counts the total number of configurations examined
++ * by the backtracking algorithm for an n×n board.
++ *
++ * This function measures the size of the search space explored by the
++ * backtracking approach, which is significantly smaller than the brute
++ * force approach due to early pruning of invalid configurations.
++ *
++ * @param n The size of the board (n×n)
++ * @return The number of configurations examined
++ *)
 Definition backtracking_count (n : nat) : nat :=
   solve_nqueens_count n n [].
 
