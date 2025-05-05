@@ -772,5 +772,5 @@ Fixpoint solve_nqueens_count (n k : nat) (partial : board) : nat :=
 Definition backtracking_count (n : nat) : nat :=
   solve_nqueens_count n n [].
 
-Eval compute in brute_force_count 8.
-Eval compute in backtracking_count 8.
+Eval compute in brute_force_count 7.
+Eval compute in backtracking_count 7.

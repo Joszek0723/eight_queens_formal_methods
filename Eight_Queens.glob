@@ -1,4 +1,4 @@
-DIGEST ccb90ba833c9cb4408c46a1630612de8
+DIGEST 224b2fa4e4b5f63aa4bc300fa52da93e
 Feight_queens_formal_methods.Eight_Queens
 R15:18 Coq.Lists.List <> <> lib
 R20:24 Coq.Arith.Arith <> <> lib
@@ -629,3 +629,53 @@ R24731:24732 Coq.Lists.List ListNotations ::list_scope:'['_']' not
 R24676:24694 eight_queens_formal_methods.Eight_Queens <> solve_nqueens_sound thm
 R24751:24755 eight_queens_formal_methods.Eight_Queens <> valid def
 R24758:24763 eight_queens_formal_methods.Eight_Queens <> validb def
+def 25233:25249 <> brute_force_count
+R25256:25258 Coq.Init.Datatypes <> nat ind
+binder 25252:25252 <> n:73
+R25263:25265 Coq.Init.Datatypes <> nat ind
+R25272:25277 Coq.Init.Datatypes <> length def
+R25280:25284 eight_queens_formal_methods.Eight_Queens <> perms def
+R25287:25291 eight_queens_formal_methods.Eight_Queens <> range def
+R25293:25293 eight_queens_formal_methods.Eight_Queens <> n:73 var
+def 25622:25625 <> sumn
+R25632:25635 Coq.Init.Datatypes <> list ind
+R25637:25639 Coq.Init.Datatypes <> nat ind
+binder 25628:25628 <> l:74
+R25644:25646 Coq.Init.Datatypes <> nat ind
+R25659:25659 eight_queens_formal_methods.Eight_Queens <> l:74 var
+R25670:25671 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R25683:25686 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R25694:25696 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R25697:25700 eight_queens_formal_methods.Eight_Queens <> sumn:75 def
+def 26316:26334 <> solve_nqueens_count
+R26343:26345 Coq.Init.Datatypes <> nat ind
+binder 26337:26337 <> n:77
+binder 26339:26339 <> k:78
+R26359:26363 eight_queens_formal_methods.Eight_Queens <> board def
+binder 26349:26355 <> partial:79
+R26368:26370 Coq.Init.Datatypes <> nat ind
+R26383:26383 eight_queens_formal_methods.Eight_Queens <> k:78 var
+R26405:26405 Coq.Init.Datatypes <> S constr
+R26419:26422 eight_queens_formal_methods.Eight_Queens <> sumn def
+R26425:26427 Coq.Lists.List <> map def
+R26561:26563 Coq.Lists.List <> seq def
+R26567:26567 eight_queens_formal_methods.Eight_Queens <> n:77 var
+binder 26434:26436 <> col:82
+R26452:26466 eight_queens_formal_methods.Eight_Queens <> safeb_efficient def
+R26468:26470 eight_queens_formal_methods.Eight_Queens <> col:82 var
+R26472:26478 eight_queens_formal_methods.Eight_Queens <> partial:79 var
+R26495:26513 eight_queens_formal_methods.Eight_Queens <> solve_nqueens_count:80 def
+R26524:26527 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R26521:26523 eight_queens_formal_methods.Eight_Queens <> col:82 var
+R26528:26534 eight_queens_formal_methods.Eight_Queens <> partial:79 var
+R26515:26515 eight_queens_formal_methods.Eight_Queens <> n:77 var
+def 27032:27049 <> backtracking_count
+R27056:27058 Coq.Init.Datatypes <> nat ind
+binder 27052:27052 <> n:83
+R27063:27065 Coq.Init.Datatypes <> nat ind
+R27072:27090 eight_queens_formal_methods.Eight_Queens <> solve_nqueens_count def
+R27092:27092 eight_queens_formal_methods.Eight_Queens <> n:83 var
+R27094:27094 eight_queens_formal_methods.Eight_Queens <> n:83 var
+R27096:27097 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R27117:27133 eight_queens_formal_methods.Eight_Queens <> brute_force_count def
+R27154:27171 eight_queens_formal_methods.Eight_Queens <> backtracking_count def
