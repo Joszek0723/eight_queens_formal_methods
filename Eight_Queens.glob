@@ -1,5 +1,5 @@
-DIGEST NO
-FEight_Queens
+DIGEST ccb90ba833c9cb4408c46a1630612de8
+Feight_queens_formal_methods.Eight_Queens
 R15:18 Coq.Lists.List <> <> lib
 R20:24 Coq.Arith.Arith <> <> lib
 R26:28 Coq.micromega.Lia <> <> lib
@@ -11,301 +11,621 @@ R125:137 Coq.Lists.List ListNotations <> mod
 def 1166:1170 <> board
 R1175:1178 Coq.Init.Datatypes <> list ind
 R1180:1182 Coq.Init.Datatypes <> nat ind
-def 1655:1657 <> abs
-R1666:1668 Coq.Init.Datatypes <> nat ind
-binder 1660:1660 <> n:1
-binder 1662:1662 <> m:2
-R1673:1675 Coq.Init.Datatypes <> nat ind
-R1685:1687 Coq.Arith.Compare_dec <> leb abbrev
-R1689:1689 Eight_Queens <> n:1 var
-R1691:1691 Eight_Queens <> m:2 var
-R1710:1712 Coq.Init.Peano <> ::nat_scope:x_'-'_x not
-R1709:1709 Eight_Queens <> n:1 var
-R1713:1713 Eight_Queens <> m:2 var
-R1699:1701 Coq.Init.Peano <> ::nat_scope:x_'-'_x not
-R1698:1698 Eight_Queens <> m:2 var
-R1702:1702 Eight_Queens <> n:1 var
-def 2294:2298 <> safeb
-R2307:2309 Coq.Init.Datatypes <> nat ind
-binder 2301:2303 <> col:3
-R2320:2324 Eight_Queens <> board def
-binder 2313:2316 <> rest:4
-R2341:2343 Coq.Init.Datatypes <> nat ind
-binder 2328:2337 <> row_offset:5
-R2348:2351 Coq.Init.Datatypes <> bool ind
-R2364:2367 Eight_Queens <> rest:4 var
-R2378:2379 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R2384:2387 Coq.Init.Datatypes <> true constr
-R2395:2398 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R2470:2479 Coq.Init.Datatypes <> ::bool_scope:x_'&&'_x not
-R2414:2417 Coq.Init.Datatypes <> negb def
-R2434:2437 Coq.Init.Datatypes <> ::bool_scope:x_'||'_x not
-R2420:2426 Coq.Arith.PeanoNat Nat eqb def
-R2428:2430 Eight_Queens <> col:3 var
-R2438:2444 Coq.Arith.PeanoNat Nat eqb def
-R2447:2449 Eight_Queens <> abs def
-R2451:2453 Eight_Queens <> col:3 var
-R2459:2468 Eight_Queens <> row_offset:5 var
-R2480:2484 Eight_Queens <> safeb:6 def
-R2497:2497 Coq.Init.Datatypes <> S constr
-R2499:2508 Eight_Queens <> row_offset:5 var
-R2486:2488 Eight_Queens <> col:3 var
-def 2865:2870 <> validb
-R2877:2881 Eight_Queens <> board def
-binder 2873:2873 <> b:8
-R2886:2889 Coq.Init.Datatypes <> bool ind
-R2902:2902 Eight_Queens <> b:8 var
-R2913:2914 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R2919:2922 Coq.Init.Datatypes <> true constr
-R2929:2932 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R2955:2958 Coq.Init.Datatypes <> ::bool_scope:x_'&&'_x not
-R2941:2945 Eight_Queens <> safeb def
-R2959:2964 Eight_Queens <> validb:9 def
-def 3380:3383 <> safe
-R3392:3394 Coq.Init.Datatypes <> nat ind
-binder 3386:3388 <> col:11
-R3405:3409 Eight_Queens <> board def
-binder 3398:3401 <> rest:12
-R3426:3428 Coq.Init.Datatypes <> nat ind
-binder 3413:3422 <> row_offset:13
-R3468:3470 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R3443:3447 Eight_Queens <> safeb def
-R3449:3451 Eight_Queens <> col:11 var
-R3453:3456 Eight_Queens <> rest:12 var
-R3458:3467 Eight_Queens <> row_offset:13 var
-R3471:3474 Coq.Init.Datatypes <> true constr
-def 3752:3756 <> valid
-R3763:3767 Eight_Queens <> board def
-binder 3759:3759 <> b:14
-R3790:3792 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R3782:3787 Eight_Queens <> validb def
-R3789:3789 Eight_Queens <> b:14 var
-R3793:3796 Coq.Init.Datatypes <> true constr
-prf 4265:4277 <> safeb_correct
-binder 4279:4281 <> col:15
-binder 4283:4286 <> rest:16
-binder 4288:4293 <> offset:17
-R4319:4323 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
-R4299:4302 Eight_Queens <> safe def
-R4304:4306 Eight_Queens <> col:15 var
-R4308:4311 Eight_Queens <> rest:16 var
-R4313:4318 Eight_Queens <> offset:17 var
-R4345:4347 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R4324:4328 Eight_Queens <> safeb def
-R4330:4332 Eight_Queens <> col:15 var
-R4334:4337 Eight_Queens <> rest:16 var
-R4339:4344 Eight_Queens <> offset:17 var
-R4348:4351 Coq.Init.Datatypes <> true constr
-prf 4715:4728 <> validb_correct
-binder 4730:4730 <> b:18
-R4743:4747 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
-R4736:4740 Eight_Queens <> valid def
-R4742:4742 Eight_Queens <> b:18 var
-R4756:4758 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R4748:4753 Eight_Queens <> validb def
-R4755:4755 Eight_Queens <> b:18 var
-R4759:4762 Coq.Init.Datatypes <> true constr
-def 5087:5090 <> sol4
-R5095:5095 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
-R5097:5098 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
-R5100:5101 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
-R5103:5104 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
-R5106:5106 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
-prf 5382:5391 <> sol4_valid
-R5395:5399 Eight_Queens <> valid def
-R5401:5404 Eight_Queens <> sol4 def
-R5421:5424 Eight_Queens <> sol4 def
-R5427:5431 Eight_Queens <> valid def
-def 5687:5695 <> test_sol4
-R5710:5712 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R5699:5704 Eight_Queens <> validb def
-R5706:5709 Eight_Queens <> sol4 def
-R5713:5716 Coq.Init.Datatypes <> true constr
-def 5993:6004 <> test_invalid
-R6027:6029 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R6008:6013 Eight_Queens <> validb def
-R6015:6015 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
-R6017:6018 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
-R6020:6021 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
-R6023:6024 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
-R6026:6026 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
-R6030:6034 Coq.Init.Datatypes <> false constr
-def 6534:6543 <> insert_all
-R6550:6552 Coq.Init.Datatypes <> nat ind
-binder 6546:6546 <> x:19
-R6560:6563 Coq.Init.Datatypes <> list ind
-R6565:6567 Coq.Init.Datatypes <> nat ind
-binder 6556:6556 <> l:20
-R6572:6575 Coq.Init.Datatypes <> list ind
-R6578:6581 Coq.Init.Datatypes <> list ind
-R6583:6585 Coq.Init.Datatypes <> nat ind
-R6599:6599 Eight_Queens <> l:20 var
-R6610:6611 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R6616:6616 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
-R6620:6620 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
-R6617:6617 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
-R6619:6619 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
-R6618:6618 Eight_Queens <> x:19 var
-R6627:6630 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R6637:6637 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R6650:6654 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R6639:6642 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R6638:6638 Eight_Queens <> x:19 var
-R6644:6647 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R6655:6657 Coq.Lists.List <> map def
-R6680:6689 Eight_Queens <> insert_all:21 def
-R6691:6691 Eight_Queens <> x:19 var
-binder 6664:6665 <> zs:23
-R6671:6674 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R6675:6676 Eight_Queens <> zs:23 var
-def 7192:7196 <> perms
-R7203:7206 Coq.Init.Datatypes <> list ind
-R7208:7210 Coq.Init.Datatypes <> nat ind
-binder 7199:7199 <> l:24
-R7215:7218 Coq.Init.Datatypes <> list ind
-R7221:7224 Coq.Init.Datatypes <> list ind
-R7226:7228 Coq.Init.Datatypes <> nat ind
-R7242:7242 Eight_Queens <> l:24 var
-R7253:7254 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R7259:7259 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
-R7262:7262 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
-R7260:7261 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R7269:7272 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R7279:7284 Coq.Lists.List <> concat def
-R7287:7289 Coq.Lists.List <> map def
-R7307:7311 Eight_Queens <> perms:25 def
-R7292:7301 Eight_Queens <> insert_all def
-def 7642:7646 <> range
-R7653:7655 Coq.Init.Datatypes <> nat ind
-binder 7649:7649 <> n:27
-R7660:7663 Coq.Init.Datatypes <> list ind
-R7665:7667 Coq.Init.Datatypes <> nat ind
-R7680:7680 Eight_Queens <> n:27 var
-R7696:7697 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R7703:7703 Coq.Init.Datatypes <> S constr
-R7719:7722 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
-R7711:7715 Eight_Queens <> range:28 def
-R7723:7723 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
-R7725:7725 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
-R7724:7724 Eight_Queens <> n:27 var
-def 8180:8195 <> all_valid_boards
-R8202:8204 Coq.Init.Datatypes <> nat ind
-binder 8198:8198 <> n:30
-R8209:8212 Coq.Init.Datatypes <> list ind
-R8214:8218 Eight_Queens <> board def
-R8225:8230 Coq.Lists.List <> filter def
-R8240:8244 Eight_Queens <> perms def
-R8247:8251 Eight_Queens <> range def
-R8253:8253 Eight_Queens <> n:30 var
-R8232:8237 Eight_Queens <> validb def
-R8311:8326 Eight_Queens <> all_valid_boards def
-R8384:8399 Eight_Queens <> all_valid_boards def
-R8457:8472 Eight_Queens <> all_valid_boards def
-R8530:8545 Eight_Queens <> all_valid_boards def
-R8603:8603 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8631:8632 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8651:8651 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8604:8609 Coq.Init.Datatypes <> length def
-R8612:8627 Eight_Queens <> all_valid_boards def
-R8633:8648 Eight_Queens <> all_valid_boards def
-R8707:8707 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8735:8736 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8755:8755 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8708:8713 Coq.Init.Datatypes <> length def
-R8716:8731 Eight_Queens <> all_valid_boards def
-R8737:8752 Eight_Queens <> all_valid_boards def
-R8811:8811 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8839:8840 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8859:8859 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8812:8817 Coq.Init.Datatypes <> length def
-R8820:8835 Eight_Queens <> all_valid_boards def
-R8841:8856 Eight_Queens <> all_valid_boards def
-R8930:8930 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8958:8959 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8978:8978 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
-R8931:8936 Coq.Init.Datatypes <> length def
-R8939:8954 Eight_Queens <> all_valid_boards def
-R8960:8975 Eight_Queens <> all_valid_boards def
-def 9363:9382 <> n_queens_brute_force
-R9389:9391 Coq.Init.Datatypes <> nat ind
-binder 9385:9385 <> n:31
-R9396:9399 Coq.Init.Datatypes <> list ind
-R9401:9405 Eight_Queens <> board def
-R9412:9427 Eight_Queens <> all_valid_boards def
-R9429:9429 Eight_Queens <> n:31 var
-prf 10240:10256 <> brute_force_sound
-binder 10258:10258 <> n:32
-binder 10260:10260 <> b:33
-R10295:10300 Coq.Init.Logic <> ::type_scope:x_'->'_x not
-R10266:10267 Coq.Lists.List <> In def
-R10272:10291 Eight_Queens <> n_queens_brute_force def
-R10293:10293 Eight_Queens <> n:32 var
-R10269:10269 Eight_Queens <> b:33 var
-R10309:10311 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R10301:10306 Eight_Queens <> validb def
-R10308:10308 Eight_Queens <> b:33 var
-R10312:10315 Coq.Init.Datatypes <> true constr
-R10334:10353 Eight_Queens <> n_queens_brute_force def
-R10356:10371 Eight_Queens <> all_valid_boards def
-R10394:10402 Coq.Lists.List <> filter_In thm
-R10394:10402 Coq.Lists.List <> filter_In thm
-prf 10993:11005 <> in_insert_all
-binder 11016:11016 <> x:34
-binder 11018:11018 <> l:35
-binder 11020:11021 <> l':36
-R11048:11053 Coq.Init.Logic <> ::type_scope:x_'->'_x not
-R11026:11027 Coq.Lists.List <> In def
-R11033:11042 Eight_Queens <> insert_all def
-R11044:11044 Eight_Queens <> x:34 var
-R11046:11046 Eight_Queens <> l:35 var
-R11029:11030 Eight_Queens <> l':36 var
-R11054:11060 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
-R11066:11067 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
-binder 11061:11062 <> l1:37
-binder 11064:11065 <> l2:38
-R11086:11089 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
-R11070:11072 Coq.Init.Logic <> ::type_scope:x_'='_x not
-R11068:11069 Eight_Queens <> l':36 var
-R11075:11078 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
-R11073:11074 Eight_Queens <> l1:37 var
-R11080:11083 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R11079:11079 Eight_Queens <> x:34 var
-R11084:11085 Eight_Queens <> l2:38 var
-R11090:11100 Coq.Sorting.Permutation <> Permutation ind
-R11113:11113 Eight_Queens <> l:35 var
-R11105:11108 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
-R11103:11104 Eight_Queens <> l1:37 var
-R11109:11110 Eight_Queens <> l2:38 var
-R11269:11270 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R11273:11274 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R11269:11270 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R11273:11274 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R11354:11355 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R11360:11361 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R11354:11355 Coq.Lists.List ListNotations ::list_scope:'['_']' not
-R11360:11361 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R11392:11401 Coq.Lists.List <> in_map_iff thm
-R11392:11401 Coq.Lists.List <> in_map_iff thm
-R11533:11534 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R11533:11534 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
-R11609:11624 Coq.Sorting.Permutation <> Permutation_cons inst
-R11609:11624 Coq.Sorting.Permutation <> Permutation_cons inst
-prf 12101:12111 <> perms_sound
-binder 12122:12122 <> l:39
-binder 12124:12125 <> l':40
-R12143:12146 Coq.Init.Logic <> ::type_scope:x_'->'_x not
-R12128:12129 Coq.Lists.List <> In def
-R12135:12139 Eight_Queens <> perms def
-R12141:12141 Eight_Queens <> l:39 var
-R12131:12132 Eight_Queens <> l':40 var
-R12147:12157 Coq.Sorting.Permutation <> Permutation ind
-R12161:12162 Eight_Queens <> l':40 var
-R12159:12159 Eight_Queens <> l:39 var
-R12276:12291 Coq.Sorting.Permutation <> Permutation_refl thm
-R12276:12291 Coq.Sorting.Permutation <> Permutation_refl thm
-R12340:12348 Coq.Lists.List <> in_concat thm
-R12340:12348 Coq.Lists.List <> in_concat thm
-R12403:12412 Coq.Lists.List <> in_map_iff thm
-R12403:12412 Coq.Lists.List <> in_map_iff thm
-R12698:12713 Coq.Sorting.Permutation <> Permutation_cons inst
-R12698:12713 Coq.Sorting.Permutation <> Permutation_cons inst
+def 1657:1659 <> abs
+R1668:1670 Coq.Init.Datatypes <> nat ind
+binder 1662:1662 <> n:1
+binder 1664:1664 <> m:2
+R1675:1677 Coq.Init.Datatypes <> nat ind
+R1687:1693 Coq.Arith.PeanoNat Nat leb def
+R1695:1695 eight_queens_formal_methods.Eight_Queens <> n:1 var
+R1697:1697 eight_queens_formal_methods.Eight_Queens <> m:2 var
+R1720:1722 Coq.Init.Peano <> ::nat_scope:x_'-'_x not
+R1719:1719 eight_queens_formal_methods.Eight_Queens <> n:1 var
+R1723:1723 eight_queens_formal_methods.Eight_Queens <> m:2 var
+R1707:1709 Coq.Init.Peano <> ::nat_scope:x_'-'_x not
+R1706:1706 eight_queens_formal_methods.Eight_Queens <> m:2 var
+R1710:1710 eight_queens_formal_methods.Eight_Queens <> n:1 var
+def 2304:2308 <> safeb
+R2317:2319 Coq.Init.Datatypes <> nat ind
+binder 2311:2313 <> col:3
+R2330:2334 eight_queens_formal_methods.Eight_Queens <> board def
+binder 2323:2326 <> rest:4
+R2351:2353 Coq.Init.Datatypes <> nat ind
+binder 2338:2347 <> row_offset:5
+R2358:2361 Coq.Init.Datatypes <> bool ind
+R2374:2377 eight_queens_formal_methods.Eight_Queens <> rest:4 var
+R2388:2389 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R2394:2397 Coq.Init.Datatypes <> true constr
+R2405:2408 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R2480:2489 Coq.Init.Datatypes <> ::bool_scope:x_'&&'_x not
+R2424:2427 Coq.Init.Datatypes <> negb def
+R2444:2447 Coq.Init.Datatypes <> ::bool_scope:x_'||'_x not
+R2430:2436 Coq.Arith.PeanoNat Nat eqb def
+R2438:2440 eight_queens_formal_methods.Eight_Queens <> col:3 var
+R2448:2454 Coq.Arith.PeanoNat Nat eqb def
+R2457:2459 eight_queens_formal_methods.Eight_Queens <> abs def
+R2461:2463 eight_queens_formal_methods.Eight_Queens <> col:3 var
+R2469:2478 eight_queens_formal_methods.Eight_Queens <> row_offset:5 var
+R2490:2494 eight_queens_formal_methods.Eight_Queens <> safeb:6 def
+R2507:2507 Coq.Init.Datatypes <> S constr
+R2509:2518 eight_queens_formal_methods.Eight_Queens <> row_offset:5 var
+R2496:2498 eight_queens_formal_methods.Eight_Queens <> col:3 var
+def 2875:2880 <> validb
+R2887:2891 eight_queens_formal_methods.Eight_Queens <> board def
+binder 2883:2883 <> b:8
+R2896:2899 Coq.Init.Datatypes <> bool ind
+R2912:2912 eight_queens_formal_methods.Eight_Queens <> b:8 var
+R2923:2924 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R2929:2932 Coq.Init.Datatypes <> true constr
+R2939:2942 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R2965:2968 Coq.Init.Datatypes <> ::bool_scope:x_'&&'_x not
+R2951:2955 eight_queens_formal_methods.Eight_Queens <> safeb def
+R2969:2974 eight_queens_formal_methods.Eight_Queens <> validb:9 def
+def 3390:3393 <> safe
+R3402:3404 Coq.Init.Datatypes <> nat ind
+binder 3396:3398 <> col:11
+R3415:3419 eight_queens_formal_methods.Eight_Queens <> board def
+binder 3408:3411 <> rest:12
+R3436:3438 Coq.Init.Datatypes <> nat ind
+binder 3423:3432 <> row_offset:13
+R3478:3480 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R3453:3457 eight_queens_formal_methods.Eight_Queens <> safeb def
+R3459:3461 eight_queens_formal_methods.Eight_Queens <> col:11 var
+R3463:3466 eight_queens_formal_methods.Eight_Queens <> rest:12 var
+R3468:3477 eight_queens_formal_methods.Eight_Queens <> row_offset:13 var
+R3481:3484 Coq.Init.Datatypes <> true constr
+def 3762:3766 <> valid
+R3773:3777 eight_queens_formal_methods.Eight_Queens <> board def
+binder 3769:3769 <> b:14
+R3800:3802 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R3792:3797 eight_queens_formal_methods.Eight_Queens <> validb def
+R3799:3799 eight_queens_formal_methods.Eight_Queens <> b:14 var
+R3803:3806 Coq.Init.Datatypes <> true constr
+prf 4275:4287 <> safeb_correct
+binder 4289:4291 <> col:15
+binder 4293:4296 <> rest:16
+binder 4298:4303 <> offset:17
+R4329:4333 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R4309:4312 eight_queens_formal_methods.Eight_Queens <> safe def
+R4314:4316 eight_queens_formal_methods.Eight_Queens <> col:15 var
+R4318:4321 eight_queens_formal_methods.Eight_Queens <> rest:16 var
+R4323:4328 eight_queens_formal_methods.Eight_Queens <> offset:17 var
+R4355:4357 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R4334:4338 eight_queens_formal_methods.Eight_Queens <> safeb def
+R4340:4342 eight_queens_formal_methods.Eight_Queens <> col:15 var
+R4344:4347 eight_queens_formal_methods.Eight_Queens <> rest:16 var
+R4349:4354 eight_queens_formal_methods.Eight_Queens <> offset:17 var
+R4358:4361 Coq.Init.Datatypes <> true constr
+prf 4725:4738 <> validb_correct
+binder 4740:4740 <> b:18
+R4753:4757 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R4746:4750 eight_queens_formal_methods.Eight_Queens <> valid def
+R4752:4752 eight_queens_formal_methods.Eight_Queens <> b:18 var
+R4766:4768 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R4758:4763 eight_queens_formal_methods.Eight_Queens <> validb def
+R4765:4765 eight_queens_formal_methods.Eight_Queens <> b:18 var
+R4769:4772 Coq.Init.Datatypes <> true constr
+def 5097:5100 <> sol4
+R5105:5105 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5107:5108 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5110:5111 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5113:5114 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5116:5116 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+prf 5392:5401 <> sol4_valid
+R5405:5409 eight_queens_formal_methods.Eight_Queens <> valid def
+R5411:5414 eight_queens_formal_methods.Eight_Queens <> sol4 def
+R5431:5434 eight_queens_formal_methods.Eight_Queens <> sol4 def
+R5437:5441 eight_queens_formal_methods.Eight_Queens <> valid def
+def 5697:5705 <> test_sol4
+R5720:5722 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R5709:5714 eight_queens_formal_methods.Eight_Queens <> validb def
+R5716:5719 eight_queens_formal_methods.Eight_Queens <> sol4 def
+R5723:5726 Coq.Init.Datatypes <> true constr
+def 6003:6014 <> test_invalid
+R6037:6039 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R6018:6023 eight_queens_formal_methods.Eight_Queens <> validb def
+R6025:6025 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6027:6028 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6030:6031 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6033:6034 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6036:6036 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6040:6044 Coq.Init.Datatypes <> false constr
+def 6544:6553 <> insert_all
+R6560:6562 Coq.Init.Datatypes <> nat ind
+binder 6556:6556 <> x:19
+R6570:6573 Coq.Init.Datatypes <> list ind
+R6575:6577 Coq.Init.Datatypes <> nat ind
+binder 6566:6566 <> l:20
+R6582:6585 Coq.Init.Datatypes <> list ind
+R6588:6591 Coq.Init.Datatypes <> list ind
+R6593:6595 Coq.Init.Datatypes <> nat ind
+R6609:6609 eight_queens_formal_methods.Eight_Queens <> l:20 var
+R6620:6621 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R6626:6626 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6630:6630 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6627:6627 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6629:6629 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6628:6628 eight_queens_formal_methods.Eight_Queens <> x:19 var
+R6637:6640 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6647:6647 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6660:6664 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6649:6652 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6648:6648 eight_queens_formal_methods.Eight_Queens <> x:19 var
+R6654:6657 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6665:6667 Coq.Lists.List <> map def
+R6690:6699 eight_queens_formal_methods.Eight_Queens <> insert_all:21 def
+R6701:6701 eight_queens_formal_methods.Eight_Queens <> x:19 var
+binder 6674:6675 <> zs:23
+R6681:6684 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6685:6686 eight_queens_formal_methods.Eight_Queens <> zs:23 var
+def 7202:7206 <> perms
+R7213:7216 Coq.Init.Datatypes <> list ind
+R7218:7220 Coq.Init.Datatypes <> nat ind
+binder 7209:7209 <> l:24
+R7225:7228 Coq.Init.Datatypes <> list ind
+R7231:7234 Coq.Init.Datatypes <> list ind
+R7236:7238 Coq.Init.Datatypes <> nat ind
+R7252:7252 eight_queens_formal_methods.Eight_Queens <> l:24 var
+R7263:7264 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R7269:7269 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7272:7272 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7270:7271 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R7279:7282 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R7289:7294 Coq.Lists.List <> concat def
+R7297:7299 Coq.Lists.List <> map def
+R7317:7321 eight_queens_formal_methods.Eight_Queens <> perms:25 def
+R7302:7311 eight_queens_formal_methods.Eight_Queens <> insert_all def
+def 7652:7656 <> range
+R7663:7665 Coq.Init.Datatypes <> nat ind
+binder 7659:7659 <> n:27
+R7670:7673 Coq.Init.Datatypes <> list ind
+R7675:7677 Coq.Init.Datatypes <> nat ind
+R7690:7690 eight_queens_formal_methods.Eight_Queens <> n:27 var
+R7706:7707 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R7713:7713 Coq.Init.Datatypes <> S constr
+R7729:7732 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R7721:7725 eight_queens_formal_methods.Eight_Queens <> range:28 def
+R7733:7733 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7735:7735 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7734:7734 eight_queens_formal_methods.Eight_Queens <> n:27 var
+def 8190:8205 <> all_valid_boards
+R8212:8214 Coq.Init.Datatypes <> nat ind
+binder 8208:8208 <> n:30
+R8219:8222 Coq.Init.Datatypes <> list ind
+R8224:8228 eight_queens_formal_methods.Eight_Queens <> board def
+R8235:8240 Coq.Lists.List <> filter def
+R8250:8254 eight_queens_formal_methods.Eight_Queens <> perms def
+R8257:8261 eight_queens_formal_methods.Eight_Queens <> range def
+R8263:8263 eight_queens_formal_methods.Eight_Queens <> n:30 var
+R8242:8247 eight_queens_formal_methods.Eight_Queens <> validb def
+R8321:8336 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8394:8409 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8467:8482 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8540:8555 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8613:8613 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8641:8642 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8661:8661 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8614:8619 Coq.Init.Datatypes <> length def
+R8622:8637 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8643:8658 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8717:8717 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8745:8746 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8765:8765 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8718:8723 Coq.Init.Datatypes <> length def
+R8726:8741 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8747:8762 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8821:8821 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8849:8850 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8869:8869 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8822:8827 Coq.Init.Datatypes <> length def
+R8830:8845 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8851:8866 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8940:8940 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8968:8969 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8988:8988 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8941:8946 Coq.Init.Datatypes <> length def
+R8949:8964 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R8970:8985 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+def 9373:9392 <> n_queens_brute_force
+R9399:9401 Coq.Init.Datatypes <> nat ind
+binder 9395:9395 <> n:31
+R9406:9409 Coq.Init.Datatypes <> list ind
+R9411:9415 eight_queens_formal_methods.Eight_Queens <> board def
+R9422:9437 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R9439:9439 eight_queens_formal_methods.Eight_Queens <> n:31 var
+prf 10250:10266 <> brute_force_sound
+binder 10268:10268 <> n:32
+binder 10270:10270 <> b:33
+R10305:10310 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R10276:10277 Coq.Lists.List <> In def
+R10282:10301 eight_queens_formal_methods.Eight_Queens <> n_queens_brute_force def
+R10303:10303 eight_queens_formal_methods.Eight_Queens <> n:32 var
+R10279:10279 eight_queens_formal_methods.Eight_Queens <> b:33 var
+R10319:10321 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R10311:10316 eight_queens_formal_methods.Eight_Queens <> validb def
+R10318:10318 eight_queens_formal_methods.Eight_Queens <> b:33 var
+R10322:10325 Coq.Init.Datatypes <> true constr
+R10344:10363 eight_queens_formal_methods.Eight_Queens <> n_queens_brute_force def
+R10366:10381 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R10404:10412 Coq.Lists.List <> filter_In thm
+R10404:10412 Coq.Lists.List <> filter_In thm
+prf 11003:11015 <> in_insert_all
+binder 11026:11026 <> x:34
+binder 11028:11028 <> l:35
+binder 11030:11031 <> l':36
+R11058:11063 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R11036:11037 Coq.Lists.List <> In def
+R11043:11052 eight_queens_formal_methods.Eight_Queens <> insert_all def
+R11054:11054 eight_queens_formal_methods.Eight_Queens <> x:34 var
+R11056:11056 eight_queens_formal_methods.Eight_Queens <> l:35 var
+R11039:11040 eight_queens_formal_methods.Eight_Queens <> l':36 var
+R11064:11070 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R11076:11077 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+binder 11071:11072 <> l1:37
+binder 11074:11075 <> l2:38
+R11096:11099 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R11080:11082 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R11078:11079 eight_queens_formal_methods.Eight_Queens <> l':36 var
+R11085:11088 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R11083:11084 eight_queens_formal_methods.Eight_Queens <> l1:37 var
+R11090:11093 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R11089:11089 eight_queens_formal_methods.Eight_Queens <> x:34 var
+R11094:11095 eight_queens_formal_methods.Eight_Queens <> l2:38 var
+R11100:11110 Coq.Sorting.Permutation <> Permutation ind
+R11123:11123 eight_queens_formal_methods.Eight_Queens <> l:35 var
+R11115:11118 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R11113:11114 eight_queens_formal_methods.Eight_Queens <> l1:37 var
+R11119:11120 eight_queens_formal_methods.Eight_Queens <> l2:38 var
+R11279:11280 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R11283:11284 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R11279:11280 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R11283:11284 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R11364:11365 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R11370:11371 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R11364:11365 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R11370:11371 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R11402:11411 Coq.Lists.List <> in_map_iff thm
+R11402:11411 Coq.Lists.List <> in_map_iff thm
+R11543:11544 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R11543:11544 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R11619:11634 Coq.Sorting.Permutation <> Permutation_cons inst
+R11619:11634 Coq.Sorting.Permutation <> Permutation_cons inst
+prf 12111:12121 <> perms_sound
+binder 12132:12132 <> l:39
+binder 12134:12135 <> l':40
+R12153:12156 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R12138:12139 Coq.Lists.List <> In def
+R12145:12149 eight_queens_formal_methods.Eight_Queens <> perms def
+R12151:12151 eight_queens_formal_methods.Eight_Queens <> l:39 var
+R12141:12142 eight_queens_formal_methods.Eight_Queens <> l':40 var
+R12157:12167 Coq.Sorting.Permutation <> Permutation ind
+R12171:12172 eight_queens_formal_methods.Eight_Queens <> l':40 var
+R12169:12169 eight_queens_formal_methods.Eight_Queens <> l:39 var
+R12286:12301 Coq.Sorting.Permutation <> Permutation_refl thm
+R12286:12301 Coq.Sorting.Permutation <> Permutation_refl thm
+R12350:12358 Coq.Lists.List <> in_concat thm
+R12350:12358 Coq.Lists.List <> in_concat thm
+R12413:12422 Coq.Lists.List <> in_map_iff thm
+R12413:12422 Coq.Lists.List <> in_map_iff thm
+R12708:12723 Coq.Sorting.Permutation <> Permutation_cons inst
+R12708:12723 Coq.Sorting.Permutation <> Permutation_cons inst
+R12834:12849 Coq.Sorting.Permutation <> Permutation_cons inst
+R12834:12849 Coq.Sorting.Permutation <> Permutation_cons inst
+R12890:12899 Coq.Lists.List <> in_map_iff thm
+R12890:12899 Coq.Lists.List <> in_map_iff thm
+R12952:12964 eight_queens_formal_methods.Eight_Queens <> in_insert_all thm
+R12952:12964 eight_queens_formal_methods.Eight_Queens <> in_insert_all thm
+R13075:13078 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R13080:13083 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R13086:13089 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R13050:13066 Coq.Sorting.Permutation <> Permutation_trans thm
+R13075:13078 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R13080:13083 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R13086:13089 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R13050:13066 Coq.Sorting.Permutation <> Permutation_trans thm
+R13110:13125 Coq.Sorting.Permutation <> Permutation_cons inst
+R13110:13125 Coq.Sorting.Permutation <> Permutation_cons inst
+R13181:13184 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R13156:13172 Coq.Sorting.Permutation <> Permutation_trans thm
+R13181:13184 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R13156:13172 Coq.Sorting.Permutation <> Permutation_trans thm
+R13234:13242 Coq.Sorting.Permutation <> perm_skip constr
+R13234:13242 Coq.Sorting.Permutation <> perm_skip constr
+R13251:13265 Coq.Sorting.Permutation <> Permutation_sym thm
+R13251:13265 Coq.Sorting.Permutation <> Permutation_sym thm
+R13330:13333 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R13335:13338 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R13341:13344 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R13305:13321 Coq.Sorting.Permutation <> Permutation_trans thm
+R13330:13333 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R13335:13338 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R13341:13344 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R13305:13321 Coq.Sorting.Permutation <> Permutation_trans thm
+R13372:13380 Coq.Sorting.Permutation <> perm_swap constr
+R13372:13380 Coq.Sorting.Permutation <> perm_swap constr
+R13406:13414 Coq.Sorting.Permutation <> perm_skip constr
+R13406:13414 Coq.Sorting.Permutation <> perm_skip constr
+R13440:13459 Coq.Sorting.Permutation <> Permutation_cons_app thm
+R13440:13459 Coq.Sorting.Permutation <> Permutation_cons_app thm
+R13485:13500 Coq.Sorting.Permutation <> Permutation_refl thm
+R13485:13500 Coq.Sorting.Permutation <> Permutation_refl thm
+prf 14065:14079 <> insert_all_head
+binder 14090:14090 <> a:41
+binder 14092:14093 <> l2:42
+R14096:14097 Coq.Lists.List <> In def
+R14110:14119 eight_queens_formal_methods.Eight_Queens <> insert_all def
+R14121:14121 eight_queens_formal_methods.Eight_Queens <> a:41 var
+R14123:14124 eight_queens_formal_methods.Eight_Queens <> l2:42 var
+R14101:14104 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R14100:14100 eight_queens_formal_methods.Eight_Queens <> a:41 var
+R14105:14106 eight_queens_formal_methods.Eight_Queens <> l2:42 var
+prf 14687:14700 <> perms_complete
+binder 14711:14711 <> l:43
+binder 14713:14714 <> l':44
+R14733:14736 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R14717:14727 Coq.Sorting.Permutation <> Permutation ind
+R14731:14732 eight_queens_formal_methods.Eight_Queens <> l':44 var
+R14729:14729 eight_queens_formal_methods.Eight_Queens <> l:43 var
+R14737:14738 Coq.Lists.List <> In def
+R14744:14748 eight_queens_formal_methods.Eight_Queens <> perms def
+R14750:14750 eight_queens_formal_methods.Eight_Queens <> l:43 var
+R14740:14741 eight_queens_formal_methods.Eight_Queens <> l':44 var
+R14814:14828 Coq.Sorting.Permutation <> Permutation_nil thm
+R14814:14828 Coq.Sorting.Permutation <> Permutation_nil thm
+R14900:14901 Coq.Lists.List <> In def
+R14900:14901 Coq.Lists.List <> In def
+R14928:14941 Coq.Sorting.Permutation <> Permutation_in thm
+R14928:14941 Coq.Sorting.Permutation <> Permutation_in thm
+R15024:15031 Coq.Lists.List <> in_split thm
+R15024:15031 Coq.Lists.List <> in_split thm
+R15096:15119 Coq.Sorting.Permutation <> Permutation_cons_app_inv thm
+R15096:15119 Coq.Sorting.Permutation <> Permutation_cons_app_inv thm
+R15141:15149 Coq.Lists.List <> in_concat thm
+R15141:15149 Coq.Lists.List <> in_concat thm
+R15164:15173 eight_queens_formal_methods.Eight_Queens <> insert_all def
+R15180:15183 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R15164:15173 eight_queens_formal_methods.Eight_Queens <> insert_all def
+R15180:15183 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R15213:15218 Coq.Lists.List <> in_map thm
+R15213:15218 Coq.Lists.List <> in_map thm
+R15316:15330 eight_queens_formal_methods.Eight_Queens <> insert_all_head thm
+R15316:15330 eight_queens_formal_methods.Eight_Queens <> insert_all_head thm
+R15377:15382 Coq.Lists.List <> in_map thm
+R15377:15382 Coq.Lists.List <> in_map thm
+R15486:15494 Coq.Lists.List <> in_or_app thm
+R15486:15494 Coq.Lists.List <> in_or_app thm
+prf 16124:16143 <> brute_force_complete
+binder 16145:16145 <> n:45
+binder 16147:16147 <> b:46
+R16165:16170 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R16161:16163 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R16153:16158 Coq.Init.Datatypes <> length def
+R16160:16160 eight_queens_formal_methods.Eight_Queens <> b:46 var
+R16164:16164 eight_queens_formal_methods.Eight_Queens <> n:45 var
+R16178:16183 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R16171:16175 eight_queens_formal_methods.Eight_Queens <> valid def
+R16177:16177 eight_queens_formal_methods.Eight_Queens <> b:46 var
+R16207:16212 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R16184:16194 Coq.Sorting.Permutation <> Permutation ind
+R16199:16203 eight_queens_formal_methods.Eight_Queens <> range def
+R16205:16205 eight_queens_formal_methods.Eight_Queens <> n:45 var
+R16196:16196 eight_queens_formal_methods.Eight_Queens <> b:46 var
+R16213:16214 Coq.Lists.List <> In def
+R16219:16238 eight_queens_formal_methods.Eight_Queens <> n_queens_brute_force def
+R16240:16240 eight_queens_formal_methods.Eight_Queens <> n:45 var
+R16216:16216 eight_queens_formal_methods.Eight_Queens <> b:46 var
+R16260:16279 eight_queens_formal_methods.Eight_Queens <> n_queens_brute_force def
+R16282:16297 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R16336:16344 Coq.Lists.List <> filter_In thm
+R16336:16344 Coq.Lists.List <> filter_In thm
+R16366:16379 eight_queens_formal_methods.Eight_Queens <> perms_complete thm
+R16366:16379 eight_queens_formal_methods.Eight_Queens <> perms_complete thm
+R16392:16406 Coq.Sorting.Permutation <> Permutation_sym thm
+R16392:16406 Coq.Sorting.Permutation <> Permutation_sym thm
+prf 16797:16808 <> range_length
+binder 16819:16819 <> n:47
+R16838:16840 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R16822:16827 Coq.Init.Datatypes <> length def
+R16830:16834 eight_queens_formal_methods.Eight_Queens <> range def
+R16836:16836 eight_queens_formal_methods.Eight_Queens <> n:47 var
+R16841:16841 eight_queens_formal_methods.Eight_Queens <> n:47 var
+R16926:16935 Coq.Lists.List <> app_length thm
+R16926:16935 Coq.Lists.List <> app_length thm
+R16926:16935 Coq.Lists.List <> app_length thm
+R16957:16968 Coq.Arith.PeanoNat Nat add_comm thm
+R16957:16968 Coq.Arith.PeanoNat Nat add_comm thm
+R16957:16968 Coq.Arith.PeanoNat Nat add_comm thm
+prf 17648:17666 <> brute_force_correct
+binder 17668:17668 <> n:48
+binder 17670:17670 <> b:49
+R17705:17712 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R17763:17763 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R17676:17677 Coq.Lists.List <> In def
+R17682:17701 eight_queens_formal_methods.Eight_Queens <> n_queens_brute_force def
+R17703:17703 eight_queens_formal_methods.Eight_Queens <> n:48 var
+R17679:17679 eight_queens_formal_methods.Eight_Queens <> b:49 var
+R17725:17728 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R17721:17723 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R17713:17718 Coq.Init.Datatypes <> length def
+R17720:17720 eight_queens_formal_methods.Eight_Queens <> b:49 var
+R17724:17724 eight_queens_formal_methods.Eight_Queens <> n:48 var
+R17736:17739 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R17729:17733 eight_queens_formal_methods.Eight_Queens <> valid def
+R17735:17735 eight_queens_formal_methods.Eight_Queens <> b:49 var
+R17740:17750 Coq.Sorting.Permutation <> Permutation ind
+R17755:17759 eight_queens_formal_methods.Eight_Queens <> range def
+R17761:17761 eight_queens_formal_methods.Eight_Queens <> n:48 var
+R17752:17752 eight_queens_formal_methods.Eight_Queens <> b:49 var
+R17833:17852 eight_queens_formal_methods.Eight_Queens <> n_queens_brute_force def
+R17855:17870 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R17892:17900 Coq.Lists.List <> filter_In thm
+R17892:17900 Coq.Lists.List <> filter_In thm
+R17940:17950 eight_queens_formal_methods.Eight_Queens <> perms_sound thm
+R17940:17950 eight_queens_formal_methods.Eight_Queens <> perms_sound thm
+R17974:17991 Coq.Sorting.Permutation <> Permutation_length thm
+R17974:17991 Coq.Sorting.Permutation <> Permutation_length thm
+R18017:18028 eight_queens_formal_methods.Eight_Queens <> range_length thm
+R18017:18028 eight_queens_formal_methods.Eight_Queens <> range_length thm
+R18017:18028 eight_queens_formal_methods.Eight_Queens <> range_length thm
+R18083:18087 eight_queens_formal_methods.Eight_Queens <> valid def
+R18103:18119 eight_queens_formal_methods.Eight_Queens <> brute_force_sound thm
+R18103:18119 eight_queens_formal_methods.Eight_Queens <> brute_force_sound thm
+R18167:18186 eight_queens_formal_methods.Eight_Queens <> n_queens_brute_force def
+R18189:18204 eight_queens_formal_methods.Eight_Queens <> all_valid_boards def
+R18226:18234 Coq.Lists.List <> filter_In thm
+R18226:18234 Coq.Lists.List <> filter_In thm
+R18269:18279 eight_queens_formal_methods.Eight_Queens <> perms_sound thm
+R18269:18279 eight_queens_formal_methods.Eight_Queens <> perms_sound thm
+R18303:18317 Coq.Sorting.Permutation <> Permutation_sym thm
+R18303:18317 Coq.Sorting.Permutation <> Permutation_sym thm
+R18376:18395 eight_queens_formal_methods.Eight_Queens <> brute_force_complete thm
+R18376:18395 eight_queens_formal_methods.Eight_Queens <> brute_force_complete thm
+def 19473:19487 <> safeb_efficient
+R19496:19498 Coq.Init.Datatypes <> nat ind
+binder 19490:19492 <> col:50
+R19511:19515 eight_queens_formal_methods.Eight_Queens <> board def
+binder 19502:19507 <> queens:51
+R19532:19534 Coq.Init.Datatypes <> nat ind
+binder 19519:19528 <> row_offset:52
+R19539:19542 Coq.Init.Datatypes <> bool ind
+R19555:19560 eight_queens_formal_methods.Eight_Queens <> queens:51 var
+R19571:19572 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R19577:19580 Coq.Init.Datatypes <> true constr
+R19588:19591 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R19607:19609 Coq.Init.Datatypes <> orb def
+R19629:19635 Coq.Arith.PeanoNat Nat eqb def
+R19638:19640 eight_queens_formal_methods.Eight_Queens <> abs def
+R19642:19644 eight_queens_formal_methods.Eight_Queens <> col:50 var
+R19650:19659 eight_queens_formal_methods.Eight_Queens <> row_offset:52 var
+R19612:19618 Coq.Arith.PeanoNat Nat eqb def
+R19620:19622 eight_queens_formal_methods.Eight_Queens <> col:50 var
+R19690:19704 eight_queens_formal_methods.Eight_Queens <> safeb_efficient:53 def
+R19714:19714 Coq.Init.Datatypes <> S constr
+R19716:19725 eight_queens_formal_methods.Eight_Queens <> row_offset:52 var
+R19706:19708 eight_queens_formal_methods.Eight_Queens <> col:50 var
+R19673:19677 Coq.Init.Datatypes <> false constr
+prf 20258:20278 <> safeb_efficient_equiv
+binder 20280:20282 <> col:55
+binder 20284:20285 <> qs:56
+binder 20287:20292 <> offset:57
+R20327:20329 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R20298:20312 eight_queens_formal_methods.Eight_Queens <> safeb_efficient def
+R20314:20316 eight_queens_formal_methods.Eight_Queens <> col:55 var
+R20318:20319 eight_queens_formal_methods.Eight_Queens <> qs:56 var
+R20321:20326 eight_queens_formal_methods.Eight_Queens <> offset:57 var
+R20330:20334 eight_queens_formal_methods.Eight_Queens <> safeb def
+R20336:20338 eight_queens_formal_methods.Eight_Queens <> col:55 var
+R20340:20341 eight_queens_formal_methods.Eight_Queens <> qs:56 var
+R20343:20348 eight_queens_formal_methods.Eight_Queens <> offset:57 var
+R20496:20498 Coq.Init.Datatypes <> orb def
+R20517:20523 Coq.Arith.PeanoNat Nat eqb def
+R20526:20528 eight_queens_formal_methods.Eight_Queens <> abs def
+R20501:20507 Coq.Arith.PeanoNat Nat eqb def
+R20496:20498 Coq.Init.Datatypes <> orb def
+R20517:20523 Coq.Arith.PeanoNat Nat eqb def
+R20526:20528 eight_queens_formal_methods.Eight_Queens <> abs def
+R20501:20507 Coq.Arith.PeanoNat Nat eqb def
+def 21203:21215 <> solve_nqueens
+R21224:21226 Coq.Init.Datatypes <> nat ind
+binder 21218:21218 <> n:58
+binder 21220:21220 <> k:59
+R21240:21244 eight_queens_formal_methods.Eight_Queens <> board def
+binder 21230:21236 <> partial:60
+R21249:21252 Coq.Init.Datatypes <> list ind
+R21254:21258 eight_queens_formal_methods.Eight_Queens <> board def
+R21271:21271 eight_queens_formal_methods.Eight_Queens <> k:59 var
+R21287:21287 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R21295:21295 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R21288:21294 eight_queens_formal_methods.Eight_Queens <> partial:60 var
+R21301:21301 Coq.Init.Datatypes <> S constr
+R21315:21322 Coq.Lists.List <> flat_map def
+R21444:21446 Coq.Lists.List <> seq def
+R21450:21450 eight_queens_formal_methods.Eight_Queens <> n:58 var
+binder 21329:21331 <> col:63
+R21347:21361 eight_queens_formal_methods.Eight_Queens <> safeb_efficient def
+R21363:21365 eight_queens_formal_methods.Eight_Queens <> col:63 var
+R21367:21373 eight_queens_formal_methods.Eight_Queens <> partial:60 var
+R21439:21440 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R21390:21402 eight_queens_formal_methods.Eight_Queens <> solve_nqueens:61 def
+R21413:21416 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R21410:21412 eight_queens_formal_methods.Eight_Queens <> col:63 var
+R21417:21423 eight_queens_formal_methods.Eight_Queens <> partial:60 var
+R21404:21404 eight_queens_formal_methods.Eight_Queens <> n:58 var
+def 21838:21858 <> n_queens_backtracking
+R21865:21867 Coq.Init.Datatypes <> nat ind
+binder 21861:21861 <> n:64
+R21872:21875 Coq.Init.Datatypes <> list ind
+R21877:21881 eight_queens_formal_methods.Eight_Queens <> board def
+R21888:21900 eight_queens_formal_methods.Eight_Queens <> solve_nqueens def
+R21902:21902 eight_queens_formal_methods.Eight_Queens <> n:64 var
+R21904:21904 eight_queens_formal_methods.Eight_Queens <> n:64 var
+R21906:21907 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R21959:21979 eight_queens_formal_methods.Eight_Queens <> n_queens_backtracking def
+prf 22567:22588 <> valid_column_extension
+binder 22599:22599 <> b:65
+binder 22601:22603 <> col:66
+R22615:22618 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R22608:22612 eight_queens_formal_methods.Eight_Queens <> valid def
+R22614:22614 eight_queens_formal_methods.Eight_Queens <> b:65 var
+R22649:22652 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R22642:22644 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R22619:22633 eight_queens_formal_methods.Eight_Queens <> safeb_efficient def
+R22635:22637 eight_queens_formal_methods.Eight_Queens <> col:66 var
+R22639:22639 eight_queens_formal_methods.Eight_Queens <> b:65 var
+R22645:22648 Coq.Init.Datatypes <> true constr
+R22653:22657 eight_queens_formal_methods.Eight_Queens <> valid def
+R22663:22666 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R22660:22662 eight_queens_formal_methods.Eight_Queens <> col:66 var
+R22667:22667 eight_queens_formal_methods.Eight_Queens <> b:65 var
+R22716:22720 eight_queens_formal_methods.Eight_Queens <> valid def
+R22746:22758 Coq.Bool.Bool <> andb_true_iff thm
+R22746:22758 Coq.Bool.Bool <> andb_true_iff thm
+R22783:22803 eight_queens_formal_methods.Eight_Queens <> safeb_efficient_equiv thm
+R22783:22803 eight_queens_formal_methods.Eight_Queens <> safeb_efficient_equiv thm
+R22783:22803 eight_queens_formal_methods.Eight_Queens <> safeb_efficient_equiv thm
+prf 23479:23497 <> solve_nqueens_sound
+binder 23508:23508 <> n:67
+binder 23510:23510 <> k:68
+binder 23512:23518 <> partial:69
+R23536:23541 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R23523:23527 eight_queens_formal_methods.Eight_Queens <> valid def
+R23529:23535 eight_queens_formal_methods.Eight_Queens <> partial:69 var
+binder 23549:23549 <> b:70
+R23584:23587 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R23552:23553 Coq.Lists.List <> In def
+R23558:23570 eight_queens_formal_methods.Eight_Queens <> solve_nqueens def
+R23572:23572 eight_queens_formal_methods.Eight_Queens <> n:67 var
+R23574:23574 eight_queens_formal_methods.Eight_Queens <> k:68 var
+R23576:23582 eight_queens_formal_methods.Eight_Queens <> partial:69 var
+R23555:23555 eight_queens_formal_methods.Eight_Queens <> b:70 var
+R23588:23592 eight_queens_formal_methods.Eight_Queens <> valid def
+R23594:23594 eight_queens_formal_methods.Eight_Queens <> b:70 var
+R23798:23808 Coq.Lists.List <> in_flat_map thm
+R23798:23808 Coq.Lists.List <> in_flat_map thm
+R23857:23871 eight_queens_formal_methods.Eight_Queens <> safeb_efficient def
+R23857:23871 eight_queens_formal_methods.Eight_Queens <> safeb_efficient def
+R23913:23917 eight_queens_formal_methods.Eight_Queens <> valid def
+R23923:23926 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R23913:23917 eight_queens_formal_methods.Eight_Queens <> valid def
+R23923:23926 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R23971:23992 eight_queens_formal_methods.Eight_Queens <> valid_column_extension thm
+R23971:23992 eight_queens_formal_methods.Eight_Queens <> valid_column_extension thm
+R24045:24048 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R24045:24048 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+prf 24526:24543 <> backtracking_sound
+binder 24554:24554 <> n:71
+binder 24556:24556 <> b:72
+R24591:24594 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R24561:24562 Coq.Lists.List <> In def
+R24567:24587 eight_queens_formal_methods.Eight_Queens <> n_queens_backtracking def
+R24589:24589 eight_queens_formal_methods.Eight_Queens <> n:71 var
+R24564:24564 eight_queens_formal_methods.Eight_Queens <> b:72 var
+R24595:24599 eight_queens_formal_methods.Eight_Queens <> valid def
+R24601:24601 eight_queens_formal_methods.Eight_Queens <> b:72 var
+R24638:24658 eight_queens_formal_methods.Eight_Queens <> n_queens_backtracking def
+R24731:24732 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R24676:24694 eight_queens_formal_methods.Eight_Queens <> solve_nqueens_sound thm
+R24731:24732 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R24676:24694 eight_queens_formal_methods.Eight_Queens <> solve_nqueens_sound thm
+R24751:24755 eight_queens_formal_methods.Eight_Queens <> valid def
+R24758:24763 eight_queens_formal_methods.Eight_Queens <> validb def

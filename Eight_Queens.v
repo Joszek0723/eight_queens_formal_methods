@@ -45,8 +45,10 @@ Definition board := list nat.
   * @param m The second natural number
   * @return The absolute difference |n - m|
   *)
-Definition abs (n m : nat) : nat :=
-  if leb n m then m - n else n - m.
+  Definition abs (n m : nat) : nat :=
+  if Nat.leb n m
+  then m - n
+  else n - m.
 
 (**
   * [safeb col rest row_offset] checks if a queen at column [col] is safe 
@@ -700,3 +702,31 @@ Proof.
   apply solve_nqueens_sound with (n := n) (k := n) (partial := []); auto.
   unfold valid, validb. simpl. reflexivity.
 Qed.
+
+
+Definition brute_force_count (n : nat) : nat :=
+  length (perms (range n)).
+
+(* Sum of a list of nats *)
+Fixpoint sumn (l : list nat) : nat :=
+  match l with
+  | [] => 0
+  | x :: xs => x + sumn xs
+  end.
+
+Fixpoint solve_nqueens_count (n k : nat) (partial : board) : nat :=
+  match k with
+  | 0 => 1 (* Count completed boards *)
+  | S k' =>
+      sumn (map (fun col =>
+        if safeb_efficient col partial 1
+        then solve_nqueens_count n k' (col :: partial)
+        else 1 (* Count pruned branches as 1 exploration *)
+      ) (seq 1 n))
+  end.
+
+Definition backtracking_count (n : nat) : nat :=
+  solve_nqueens_count n n [].
+
+Eval compute in brute_force_count 8.
+Eval compute in backtracking_count 8.

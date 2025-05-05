@@ -1,0 +1,1709 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title></title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Eight_Queens</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">List</span> <span class="id" title="var">Arith</span> <span class="id" title="var">Lia</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Coq</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">List</span> <span class="id" title="var">Permutation</span> <span class="id" title="var">Bool</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Coq.Sorting.Permutation</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">ListNotations</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1"></a><h1 class="section">N-Queens Formal Verification</h1>
+
+<a id="lab2"></a><h1 class="section"> </h1>
+
+<a id="lab3"></a><h1 class="section">This file contains formal verification of the N-Queens problem using Coq.</h1>
+
+<a id="lab4"></a><h1 class="section">We implement and verify two main approaches:</h1>
+
+<a id="lab5"></a><h1 class="section">1. A brute force approach that generates all permutations and filters valid ones</h1>
+
+<a id="lab6"></a><h1 class="section">2. A backtracking approach that incrementally builds valid solutions</h1>
+
+  
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+<a id="lab7"></a><h1 class="section">Brute Force Solution</h1>
+
+  *
+<a id="lab8"></a><h1 class="section">The brute force approach works by:</h1>
+
+<a id="lab9"></a><h1 class="section">1. Generating all possible permutations of queen placements</h1>
+
+<a id="lab10"></a><h1 class="section">2. Filtering them to keep only valid ones</h1>
+
+<a id="lab11"></a><h1 class="section">3. A valid placement ensures no queens attack each other</h1>
+
+  
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+<a id="lab12"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">board</span></span> represents a chess board configuration for the N-Queens problem.</h1>
+
+<a id="lab13"></a><h1 class="section">Each element represents a column position, and the index represents the row.</h1>
+
+<a id="lab14"></a><h1 class="section">The length of the list represents the board size.</h1>
+
+<a id="lab15"></a><h1 class="section"> </h1>
+
+<a id="lab16"></a><h1 class="section">For example, <span class="inlinecode">2;</span> <span class="inlinecode">4;</span> <span class="inlinecode">1;</span> <span class="inlinecode">3</span> represents a 4×4 board where:</h1>
+
+<a id="lab17"></a><h1 class="section">- Row 1 has a queen in column 2</h1>
+
+<a id="lab18"></a><h1 class="section">- Row 2 has a queen in column 4</h1>
+
+<a id="lab19"></a><h1 class="section">- Row 3 has a queen in column 1</h1>
+
+<a id="lab20"></a><h1 class="section">- Row 4 has a queen in column 3</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">board</span> := <span class="id" title="var">list</span> <span class="id" title="var">nat</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab21"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">abs</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> computes the absolute difference between two natural numbers.</h1>
+
+<a id="lab22"></a><h1 class="section"> </h1>
+
+<a id="lab23"></a><h1 class="section">This function is essential for checking diagonal attacks in the N-Queens problem.</h1>
+
+<a id="lab24"></a><h1 class="section">Two queens attack each other diagonally if the absolute difference in their row</h1>
+
+<a id="lab25"></a><h1 class="section">positions equals the absolute difference in their column positions.</h1>
+
+  *
+<a id="lab26"></a><h1 class="section">@param n The first natural number</h1>
+
+<a id="lab27"></a><h1 class="section">@param m The second natural number</h1>
+
+<a id="lab28"></a><h1 class="section">@return The absolute difference |n - m|</h1>
+
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">abs</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">nat</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">if</span> <span class="id" title="var">Nat.leb</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">then</span> <span class="id" title="var">m</span> - <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">else</span> <span class="id" title="var">n</span> - <span class="id" title="var">m</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab29"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">safeb</span></span> <span class="inlinecode"><span class="id" title="var">col</span></span> <span class="inlinecode"><span class="id" title="var">rest</span></span> <span class="inlinecode"><span class="id" title="var">row_offset</span></span> checks if a queen at column <span class="inlinecode"><span class="id" title="var">col</span></span> is safe</h1>
+
+<a id="lab30"></a><h1 class="section">with respect to the queens in <span class="inlinecode"><span class="id" title="var">rest</span></span>, starting at row offset <span class="inlinecode"><span class="id" title="var">row_offset</span></span>.</h1>
+
+  *
+<a id="lab31"></a><h1 class="section">A queen is safe if it doesn't attack any other queen, meaning:</h1>
+
+<a id="lab32"></a><h1 class="section">1. It's not in the same column as any other queen</h1>
+
+<a id="lab33"></a><h1 class="section">2. It's not on the same diagonal as any other queen</h1>
+
+  *
+<a id="lab34"></a><h1 class="section">@param col The column position to check</h1>
+
+<a id="lab35"></a><h1 class="section">@param rest The list of existing queen positions</h1>
+
+<a id="lab36"></a><h1 class="section">@param row_offset The row distance from the current position</h1>
+
+<a id="lab37"></a><h1 class="section">@return true if the position is safe, false otherwise</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">safeb</span> (<span class="id" title="var">col</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">rest</span> : <span class="id" title="var">board</span>) (<span class="id" title="var">row_offset</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">bool</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">rest</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [] =&gt; <span class="id" title="var">true</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">c'</span> :: <span class="id" title="var">rest'</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">negb</span> (<span class="id" title="var">Nat.eqb</span> <span class="id" title="var">col</span> <span class="id" title="var">c'</span> || <span class="id" title="var">Nat.eqb</span> (<span class="id" title="var">abs</span> <span class="id" title="var">col</span> <span class="id" title="var">c'</span>) <span class="id" title="var">row_offset</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp; <span class="id" title="var">safeb</span> <span class="id" title="var">col</span> <span class="id" title="var">rest'</span> (<span class="id" title="var">S</span> <span class="id" title="var">row_offset</span>)<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab38"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">validb</span></span> <span class="inlinecode"><span class="id" title="var">b</span></span> checks if a board configuration is valid.</h1>
+
+  *
+<a id="lab39"></a><h1 class="section">A valid board has no attacking queens. This function checks each queen</h1>
+
+<a id="lab40"></a><h1 class="section">against all queens placed after it in the list to ensure there are no attacks.</h1>
+
+  *
+<a id="lab41"></a><h1 class="section">@param b The board configuration to validate</h1>
+
+<a id="lab42"></a><h1 class="section">@return true if the board is valid, false otherwise</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">validb</span> (<span class="id" title="var">b</span> : <span class="id" title="var">board</span>) : <span class="id" title="var">bool</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">b</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [] =&gt; <span class="id" title="var">true</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">c</span> :: <span class="id" title="var">rest</span> =&gt; <span class="id" title="var">safeb</span> <span class="id" title="var">c</span> <span class="id" title="var">rest</span> 1 &amp;&amp; <span class="id" title="var">validb</span> <span class="id" title="var">rest</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab43"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">safe</span></span> <span class="inlinecode"><span class="id" title="var">col</span></span> <span class="inlinecode"><span class="id" title="var">rest</span></span> <span class="inlinecode"><span class="id" title="var">row_offset</span></span> is the propositional version of <span class="inlinecode"><span class="id" title="var">safeb</span></span>.</h1>
+
+  *
+<a id="lab44"></a><h1 class="section">This lifts the boolean safety check to the Prop universe for use in formal proofs.</h1>
+
+  *
+<a id="lab45"></a><h1 class="section">@param col The column position to check</h1>
+
+<a id="lab46"></a><h1 class="section">@param rest The list of existing queen positions</h1>
+
+<a id="lab47"></a><h1 class="section">@param row_offset The row distance from the current position</h1>
+
+<a id="lab48"></a><h1 class="section">@return A proposition that the position is safe</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">safe</span> (<span class="id" title="var">col</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">rest</span> : <span class="id" title="var">board</span>) (<span class="id" title="var">row_offset</span> : <span class="id" title="var">nat</span>) : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">safeb</span> <span class="id" title="var">col</span> <span class="id" title="var">rest</span> <span class="id" title="var">row_offset</span> = <span class="id" title="var">true</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab49"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">valid</span></span> <span class="inlinecode"><span class="id" title="var">b</span></span> is the propositional version of <span class="inlinecode"><span class="id" title="var">validb</span></span>.</h1>
+
+  *
+<a id="lab50"></a><h1 class="section">This lifts the boolean board validation to the Prop universe for use in formal proofs.</h1>
+
+  *
+<a id="lab51"></a><h1 class="section">@param b The board configuration to validate</h1>
+
+<a id="lab52"></a><h1 class="section">@return A proposition that the board is valid</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">valid</span> (<span class="id" title="var">b</span> : <span class="id" title="var">board</span>) : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">validb</span> <span class="id" title="var">b</span> = <span class="id" title="var">true</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab53"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">safeb_correct</span></span> establishes the equivalence between the <span class="inlinecode"><span class="id" title="var">safe</span></span> proposition</h1>
+
+<a id="lab54"></a><h1 class="section">and the <span class="inlinecode"><span class="id" title="var">safeb</span></span> boolean function.</h1>
+
+  *
+<a id="lab55"></a><h1 class="section">This lemma is straightforward since <span class="inlinecode"><span class="id" title="var">safe</span></span> is defined directly in terms of <span class="inlinecode"><span class="id" title="var">safeb</span></span>.</h1>
+
+  *
+<a id="lab56"></a><h1 class="section">@param col The column position to check</h1>
+
+<a id="lab57"></a><h1 class="section">@param rest The list of existing queen positions</h1>
+
+<a id="lab58"></a><h1 class="section">@param offset The row distance from the current position</h1>
+
+<a id="lab59"></a><h1 class="section">@return A proof that safe col rest offset &lt;-&gt; safeb col rest offset = true</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">safeb_correct</span> <span class="id" title="var">col</span> <span class="id" title="var">rest</span> <span class="id" title="var">offset</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">safe</span> <span class="id" title="var">col</span> <span class="id" title="var">rest</span> <span class="id" title="var">offset</span> &lt;-&gt; <span class="id" title="var">safeb</span> <span class="id" title="var">col</span> <span class="id" title="var">rest</span> <span class="id" title="var">offset</span> = <span class="id" title="var">true</span>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab60"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">validb_correct</span></span> establishes the equivalence between the <span class="inlinecode"><span class="id" title="var">valid</span></span> proposition</h1>
+
+<a id="lab61"></a><h1 class="section">and the <span class="inlinecode"><span class="id" title="var">validb</span></span> boolean function.</h1>
+
+  *
+<a id="lab62"></a><h1 class="section">This lemma is straightforward since <span class="inlinecode"><span class="id" title="var">valid</span></span> is defined directly in terms of <span class="inlinecode"><span class="id" title="var">validb</span></span>.</h1>
+
+  *
+<a id="lab63"></a><h1 class="section">@param b The board configuration to validate</h1>
+
+<a id="lab64"></a><h1 class="section">@return A proof that valid b &lt;-&gt; validb b = true</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">validb_correct</span> <span class="id" title="var">b</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">valid</span> <span class="id" title="var">b</span> &lt;-&gt; <span class="id" title="var">validb</span> <span class="id" title="var">b</span> = <span class="id" title="var">true</span>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab65"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">sol4</span></span> defines a known solution to the 4-Queens problem.</h1>
+
+  *
+<a id="lab66"></a><h1 class="section">The solution <span class="inlinecode">2;</span> <span class="inlinecode">4;</span> <span class="inlinecode">1;</span> <span class="inlinecode">3</span> represents a valid placement of queens on a 4×4 board,</h1>
+
+<a id="lab67"></a><h1 class="section">with queens placed at positions:</h1>
+
+<a id="lab68"></a><h1 class="section">- Row 1, Column 2</h1>
+
+<a id="lab69"></a><h1 class="section">- Row 2, Column 4</h1>
+
+<a id="lab70"></a><h1 class="section">- Row 3, Column 1</h1>
+
+<a id="lab71"></a><h1 class="section">- Row 4, Column 3</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">sol4</span> := [2; 4; 1; 3].<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab72"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">sol4_valid</span></span> formally proves that <span class="inlinecode"><span class="id" title="var">sol4</span></span> is a valid solution to the 4-Queens problem.</h1>
+
+  *
+<a id="lab73"></a><h1 class="section">This lemma verifies that the known solution <span class="inlinecode">2;</span> <span class="inlinecode">4;</span> <span class="inlinecode">1;</span> <span class="inlinecode">3</span> satisfies the validity</h1>
+
+<a id="lab74"></a><h1 class="section">constraints of the n-queens problem, ensuring no queens attack each other.</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">sol4_valid</span> : <span class="id" title="var">valid</span> <span class="id" title="var">sol4</span>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">sol4</span>, <span class="id" title="var">valid</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab75"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">test_sol4</span></span> is an example demonstrating that <span class="inlinecode"><span class="id" title="var">sol4</span></span> is valid.</h1>
+
+  *
+<a id="lab76"></a><h1 class="section">This example explicitly computes the result of <span class="inlinecode"><span class="id" title="var">validb</span></span> <span class="inlinecode"><span class="id" title="var">sol4</span></span> to show</h1>
+
+<a id="lab77"></a><h1 class="section">it evaluates to true, confirming the validity of the solution.</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Example</span> <span class="id" title="var">test_sol4</span> : <span class="id" title="var">validb</span> <span class="id" title="var">sol4</span> = <span class="id" title="var">true</span>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab78"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">test_invalid</span></span> is an example demonstrating an invalid board configuration.</h1>
+
+  *
+<a id="lab79"></a><h1 class="section">The configuration <span class="inlinecode">1;</span> <span class="inlinecode">2;</span> <span class="inlinecode">3;</span> <span class="inlinecode">4</span> is invalid because queens can attack each other.</h1>
+
+<a id="lab80"></a><h1 class="section">Specifically, queens on the diagonal can attack each other.</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Example</span> <span class="id" title="var">test_invalid</span> : <span class="id" title="var">validb</span> [1; 2; 3; 4] = <span class="id" title="var">false</span>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab81"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">insert_all</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode"><span class="id" title="var">l</span></span> generates all possible ways to insert an element <span class="inlinecode"><span class="id" title="var">x</span></span></h1>
+
+<a id="lab82"></a><h1 class="section">into a list <span class="inlinecode"><span class="id" title="var">l</span></span> at all possible positions.</h1>
+
+  *
+<a id="lab83"></a><h1 class="section">This function is used by the permutation generator to create all permutations.</h1>
+
+<a id="lab84"></a><h1 class="section">It systematically inserts an element at each possible position in the list.</h1>
+
+  *
+<a id="lab85"></a><h1 class="section">@param x The element to insert</h1>
+
+<a id="lab86"></a><h1 class="section">@param l The list to insert into</h1>
+
+<a id="lab87"></a><h1 class="section">@return A list of lists, where each list is a different result of inserting x into l</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">insert_all</span> (<span class="id" title="var">x</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">l</span> : <span class="id" title="var">list</span> <span class="id" title="var">nat</span>) : <span class="id" title="var">list</span> (<span class="id" title="var">list</span> <span class="id" title="var">nat</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">l</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [] =&gt; [[<span class="id" title="var">x</span>]]<br/>
+  | <span class="id" title="var">y</span> :: <span class="id" title="var">ys</span> =&gt; (<span class="id" title="var">x</span> :: <span class="id" title="var">y</span> :: <span class="id" title="var">ys</span>) :: <span class="id" title="var">map</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">zs</span> =&gt; <span class="id" title="var">y</span> :: <span class="id" title="var">zs</span>) (<span class="id" title="var">insert_all</span> <span class="id" title="var">x</span> <span class="id" title="var">ys</span>)<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab88"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">perms</span></span> <span class="inlinecode"><span class="id" title="var">l</span></span> generates all possible permutations of a list <span class="inlinecode"><span class="id" title="var">l</span></span>.</h1>
+
+  *
+<a id="lab89"></a><h1 class="section">This function works recursively:</h1>
+
+<a id="lab90"></a><h1 class="section">1. For the empty list, there's only one permutation: the empty list</h1>
+
+<a id="lab91"></a><h1 class="section">2. For a non-empty list, it takes the first element, finds all permutations</h1>
+
+<a id="lab92"></a><h1 class="section">of the rest, and then inserts the first element at all possible positions</h1>
+
+<a id="lab93"></a><h1 class="section">in each of those permutations</h1>
+
+  *
+<a id="lab94"></a><h1 class="section">@param l The list to permute</h1>
+
+<a id="lab95"></a><h1 class="section">@return A list of all possible permutations of <span class="inlinecode"><span class="id" title="var">l</span></span></h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">perms</span> (<span class="id" title="var">l</span> : <span class="id" title="var">list</span> <span class="id" title="var">nat</span>) : <span class="id" title="var">list</span> (<span class="id" title="var">list</span> <span class="id" title="var">nat</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">l</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [] =&gt; [[]]<br/>
+  | <span class="id" title="var">x</span> :: <span class="id" title="var">xs</span> =&gt; <span class="id" title="var">concat</span> (<span class="id" title="var">map</span> (<span class="id" title="var">insert_all</span> <span class="id" title="var">x</span>) (<span class="id" title="var">perms</span> <span class="id" title="var">xs</span>))<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab96"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">range</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> generates a list of natural numbers from 1 to n in ascending order.</h1>
+
+  *
+<a id="lab97"></a><h1 class="section">For the N-Queens problem, this function generates the column positions</h1>
+
+<a id="lab98"></a><h1 class="section">that can be used in a solution for an n×n board.</h1>
+
+  *
+<a id="lab99"></a><h1 class="section">@param n The upper bound of the range</h1>
+
+<a id="lab100"></a><h1 class="section">@return The list <span class="inlinecode">1;</span> <span class="inlinecode">2;</span> <span class="inlinecode">...;</span> <span class="inlinecode"><span class="id" title="var">n</span></span></h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">range</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">list</span> <span class="id" title="var">nat</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| 0 =&gt; []<br/>
+&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">range</span> <span class="id" title="var">n'</span> ++ [<span class="id" title="var">n</span>]<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab101"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">all_valid_boards</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> generates all valid solutions to the N-Queens problem</h1>
+
+<a id="lab102"></a><h1 class="section">for an n×n board using the brute force approach.</h1>
+
+  *
+<a id="lab103"></a><h1 class="section">The function works by:</h1>
+
+<a id="lab104"></a><h1 class="section">1. Generating all possible permutations of column positions (1 to n)</h1>
+
+<a id="lab105"></a><h1 class="section">2. Filtering to keep only those permutations that represent valid board configurations</h1>
+
+  *
+<a id="lab106"></a><h1 class="section">@param n The size of the board (n×n)</h1>
+
+<a id="lab107"></a><h1 class="section">@return A list of all valid n-queens solutions</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">all_valid_boards</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">list</span> <span class="id" title="var">board</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">filter</span> <span class="id" title="var">validb</span> (<span class="id" title="var">perms</span> (<span class="id" title="var">range</span> <span class="id" title="var">n</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">compute</span> <span class="id" title="tactic">in</span> <span class="id" title="var">all_valid_boards</span> 1.<br/>
+
+<br/>
+<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">compute</span> <span class="id" title="tactic">in</span> <span class="id" title="var">all_valid_boards</span> 2.<br/>
+
+<br/>
+<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">compute</span> <span class="id" title="tactic">in</span> <span class="id" title="var">all_valid_boards</span> 3.<br/>
+
+<br/>
+<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">compute</span> <span class="id" title="tactic">in</span> <span class="id" title="var">all_valid_boards</span> 4.<br/>
+
+<br/>
+<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">compute</span> <span class="id" title="tactic">in</span> (<span class="id" title="var">length</span> (<span class="id" title="var">all_valid_boards</span> 5), <span class="id" title="var">all_valid_boards</span> 5).<br/>
+
+<br/>
+<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">compute</span> <span class="id" title="tactic">in</span> (<span class="id" title="var">length</span> (<span class="id" title="var">all_valid_boards</span> 6), <span class="id" title="var">all_valid_boards</span> 6).<br/>
+
+<br/>
+<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">compute</span> <span class="id" title="tactic">in</span> (<span class="id" title="var">length</span> (<span class="id" title="var">all_valid_boards</span> 7), <span class="id" title="var">all_valid_boards</span> 7).<br/>
+
+<br/>
+<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">compute</span> <span class="id" title="tactic">in</span> (<span class="id" title="var">length</span> (<span class="id" title="var">all_valid_boards</span> 8), <span class="id" title="var">all_valid_boards</span> 8).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab108"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">n_queens_brute_force</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> is a wrapper around <span class="inlinecode"><span class="id" title="var">all_valid_boards</span></span> that</h1>
+
+<a id="lab109"></a><h1 class="section">returns all valid solutions to the N-Queens problem for an n×n board.</h1>
+
+  *
+<a id="lab110"></a><h1 class="section">This function provides a clean interface to access all valid solutions</h1>
+
+<a id="lab111"></a><h1 class="section">using the brute force approach.</h1>
+
+  *
+<a id="lab112"></a><h1 class="section">@param n The size of the board (n×n)</h1>
+
+<a id="lab113"></a><h1 class="section">@return A list of all valid n-queens solutions</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">n_queens_brute_force</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">list</span> <span class="id" title="var">board</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">all_valid_boards</span> <span class="id" title="var">n</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab114"></a><h1 class="section">Correctness of the Brute-Force Solver</h1>
+
+  *
+<a id="lab115"></a><h1 class="section">We now prove the factual correctness of our brute-force n-queens algorithm.</h1>
+
+<a id="lab116"></a><h1 class="section">This requires establishing two key properties:</h1>
+
+  *
+<a id="lab117"></a><h1 class="section">1. Soundness: Every board returned by the algorithm is indeed a valid n-queens solution.</h1>
+
+<a id="lab118"></a><h1 class="section">2. Completeness: Every valid n-queens solution of size n is found by the algorithm.</h1>
+
+  
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+<a id="lab119"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">brute_force_sound</span></span> proves the soundness of the brute force algorithm.</h1>
+
+  *
+<a id="lab120"></a><h1 class="section">This lemma establishes that every board returned by the n_queens_brute_force</h1>
+
+<a id="lab121"></a><h1 class="section">function is a valid n-queens solution, ensuring there are no attacking queens.</h1>
+
+  *
+<a id="lab122"></a><h1 class="section">@param n The size of the board (n×n)</h1>
+
+<a id="lab123"></a><h1 class="section">@param b A board configuration returned by the brute force algorithm</h1>
+
+<a id="lab124"></a><h1 class="section">@return A proof that b is a valid board configuration</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">brute_force_sound</span> <span class="id" title="var">n</span> <span class="id" title="var">b</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">In</span> <span class="id" title="var">b</span> (<span class="id" title="var">n_queens_brute_force</span> <span class="id" title="var">n</span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">validb</span> <span class="id" title="var">b</span> = <span class="id" title="var">true</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">n_queens_brute_force</span>, <span class="id" title="var">all_valid_boards</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Hin</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">filter_In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">_</span> <span class="id" title="var">Hvalid</span>]; <span class="id" title="tactic">exact</span> <span class="id" title="var">Hvalid</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab125"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">in_insert_all</span></span> characterizes the shape of any list produced by <span class="inlinecode"><span class="id" title="var">insert_all</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode"><span class="id" title="var">l</span></span>.</h1>
+
+  *
+<a id="lab126"></a><h1 class="section">This lemma shows that every list produced by insert_all decomposes as <span class="inlinecode"><span class="id" title="var">l1</span></span> <span class="inlinecode">++</span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">::</span> <span class="inlinecode"><span class="id" title="var">l2</span></span>,</h1>
+
+<a id="lab127"></a><h1 class="section">where <span class="inlinecode"><span class="id" title="var">l1</span></span> <span class="inlinecode">++</span> <span class="inlinecode"><span class="id" title="var">l2</span></span> is a permutation of the original list <span class="inlinecode"><span class="id" title="var">l</span></span>. This is a key property</h1>
+
+<a id="lab128"></a><h1 class="section">used in proving the correctness of the permutation generator.</h1>
+
+  *
+<a id="lab129"></a><h1 class="section">@param x The element being inserted</h1>
+
+<a id="lab130"></a><h1 class="section">@param l The original list</h1>
+
+<a id="lab131"></a><h1 class="section">@param l' A list produced by insert_all x l</h1>
+
+<a id="lab132"></a><h1 class="section">@return A proof characterizing the structure of l' in terms of l and x</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">in_insert_all</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">l</span> <span class="id" title="var">l'</span>,<br/>
+&nbsp;&nbsp;<span class="id" title="var">In</span> <span class="id" title="var">l'</span> (<span class="id" title="var">insert_all</span> <span class="id" title="var">x</span> <span class="id" title="var">l</span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">l1</span> <span class="id" title="var">l2</span>, <span class="id" title="var">l'</span> = <span class="id" title="var">l1</span> ++ <span class="id" title="var">x</span> :: <span class="id" title="var">l2</span> /\ <span class="id" title="var">Permutation</span> (<span class="id" title="var">l1</span> ++ <span class="id" title="var">l2</span>) <span class="id" title="var">l</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">l</span> <span class="id" title="var">l'</span> <span class="id" title="var">Hin</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">l</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">y</span> <span class="id" title="var">ys</span> <span class="id" title="var">IH</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">l'</span>, <span class="id" title="var">Hin</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">Hin</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span>|<span class="id" title="var">H</span>]; [|<span class="id" title="var">contradiction</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">l'</span>. <span class="id" title="tactic">exists</span> [], []. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">Hin</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span>|<span class="id" title="var">H</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">subst</span> <span class="id" title="var">l'</span>. <span class="id" title="tactic">exists</span> [], (<span class="id" title="var">y</span>::<span class="id" title="var">ys</span>). <span class="id" title="tactic">split</span>; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">in_map_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">zs</span> [<span class="id" title="var">Heq</span> <span class="id" title="var">Hzs</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hzs</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">Hzs</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">l1</span> [<span class="id" title="var">l2</span> [<span class="id" title="var">Heq'</span> <span class="id" title="var">Hperm</span>]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">zs</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">y</span>::<span class="id" title="var">l1</span>), <span class="id" title="var">l2</span>. <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">Heq</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_cons</span>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab133"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">perms_sound</span></span> proves the soundness of the permutation generator.</h1>
+
+  *
+<a id="lab134"></a><h1 class="section">This lemma establishes that every list produced by the <span class="inlinecode"><span class="id" title="var">perms</span></span> function</h1>
+
+<a id="lab135"></a><h1 class="section">is a permutation of the original list. This is a key property for ensuring</h1>
+
+<a id="lab136"></a><h1 class="section">that the brute force approach considers all valid board arrangements.</h1>
+
+  *
+<a id="lab137"></a><h1 class="section">@param l The original list</h1>
+
+<a id="lab138"></a><h1 class="section">@param l' A list produced by perms l</h1>
+
+<a id="lab139"></a><h1 class="section">@return A proof that l' is a permutation of l</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">perms_sound</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">l</span> <span class="id" title="var">l'</span>, <span class="id" title="var">In</span> <span class="id" title="var">l'</span> (<span class="id" title="var">perms</span> <span class="id" title="var">l</span>) -&gt; <span class="id" title="var">Permutation</span> <span class="id" title="var">l</span> <span class="id" title="var">l'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">l</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">a</span> <span class="id" title="var">l</span> <span class="id" title="var">IHl</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">l'</span> <span class="id" title="var">Hin</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">Hin</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span> | <span class="id" title="var">H</span>]; [<span class="id" title="tactic">subst</span> <span class="id" title="var">l'</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_refl</span> | <span class="id" title="var">contradiction</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">in_concat</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">Hin</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">l''</span> [<span class="id" title="var">Hin1</span> <span class="id" title="var">Hin2</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">in_map_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin1</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">Hin1</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">l'''</span> [<span class="id" title="var">Heq</span> <span class="id" title="var">Hin1</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">l''</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">clear</span> <span class="id" title="var">IHl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">l'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">l'''</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">xs</span> <span class="id" title="var">IH</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">a</span>, <span class="id" title="var">Hin1</span> |- *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">l'</span> <span class="id" title="var">Hin2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hin2</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span>|<span class="id" title="var">H</span>]; [<span class="id" title="tactic">subst</span> <span class="id" title="var">l'</span> | <span class="id" title="var">contradiction</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_cons</span>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Hin1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">l'</span> <span class="id" title="var">Hin2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hin2</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span>|<span class="id" title="var">H</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">subst</span> <span class="id" title="var">l'</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_cons</span>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*<span class="id" title="tactic">apply</span> <span class="id" title="var">in_map_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">zs</span> [<span class="id" title="var">Heq'</span> <span class="id" title="var">Hzs</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">in_insert_all</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hzs</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">Hzs</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">l1</span> [<span class="id" title="var">l2</span> [<span class="id" title="var">Heq''</span> <span class="id" title="var">Hperm</span>]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">zs</span> <span class="id" title="var">l'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_trans</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">a</span> :: <span class="id" title="var">x</span> :: <span class="id" title="var">l1</span> ++ <span class="id" title="var">l2</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_cons</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_trans</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">x</span> :: <span class="id" title="var">xs</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;** <span class="id" title="tactic">apply</span> <span class="id" title="var">Hin1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;** <span class="id" title="tactic">apply</span> <span class="id" title="var">perm_skip</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_sym</span>, <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;** <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_trans</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">x</span> :: <span class="id" title="var">a</span> :: <span class="id" title="var">l1</span> ++ <span class="id" title="var">l2</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*** <span class="id" title="tactic">apply</span> <span class="id" title="var">perm_swap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*** <span class="id" title="tactic">apply</span> <span class="id" title="var">perm_skip</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_cons_app</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_refl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab140"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">insert_all_head</span></span> proves that inserting an element at the head is always</h1>
+
+<a id="lab141"></a><h1 class="section">one of the results produced by the <span class="inlinecode"><span class="id" title="var">insert_all</span></span> function.</h1>
+
+  *
+<a id="lab142"></a><h1 class="section">This lemma shows that for any element <span class="inlinecode"><span class="id" title="var">a</span></span> and list <span class="inlinecode"><span class="id" title="var">l2</span></span>, the list <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">::</span> <span class="inlinecode"><span class="id" title="var">l2</span></span></h1>
+
+<a id="lab143"></a><h1 class="section">(where a is inserted at the beginning) is always one of the results produced</h1>
+
+<a id="lab144"></a><h1 class="section">by <span class="inlinecode"><span class="id" title="var">insert_all</span></span> <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode"><span class="id" title="var">l2</span></span>. This is used in proving the completeness of the</h1>
+
+<a id="lab145"></a><h1 class="section">permutation generator.</h1>
+
+  *
+<a id="lab146"></a><h1 class="section">@param a The element to insert</h1>
+
+<a id="lab147"></a><h1 class="section">@param l2 The list to insert into</h1>
+
+<a id="lab148"></a><h1 class="section">@return A proof that (a :: l2) is in (insert_all a l2)</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">insert_all_head</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">l2</span>, <span class="id" title="var">In</span> (<span class="id" title="var">a</span> :: <span class="id" title="var">l2</span>) (<span class="id" title="var">insert_all</span> <span class="id" title="var">a</span> <span class="id" title="var">l2</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">l2</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">y</span> <span class="id" title="var">ys</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab149"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">perms_complete</span></span> proves the completeness of the permutation generator.</h1>
+
+  *
+<a id="lab150"></a><h1 class="section">This lemma establishes that every possible permutation of a list <span class="inlinecode"><span class="id" title="var">l</span></span></h1>
+
+<a id="lab151"></a><h1 class="section">appears in the result of <span class="inlinecode"><span class="id" title="var">perms</span></span> <span class="inlinecode"><span class="id" title="var">l</span></span>. Combined with <span class="inlinecode"><span class="id" title="var">perms_sound</span></span>, this</h1>
+
+<a id="lab152"></a><h1 class="section">shows that <span class="inlinecode"><span class="id" title="var">perms</span></span> <span class="inlinecode"><span class="id" title="var">l</span></span> generates exactly all permutations of <span class="inlinecode"><span class="id" title="var">l</span></span>, no more</h1>
+
+<a id="lab153"></a><h1 class="section">and no less.</h1>
+
+  *
+<a id="lab154"></a><h1 class="section">@param l The original list</h1>
+
+<a id="lab155"></a><h1 class="section">@param l' A permutation of l</h1>
+
+<a id="lab156"></a><h1 class="section">@return A proof that l' is in (perms l)</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">perms_complete</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">l</span> <span class="id" title="var">l'</span>, <span class="id" title="var">Permutation</span> <span class="id" title="var">l</span> <span class="id" title="var">l'</span> -&gt; <span class="id" title="var">In</span> <span class="id" title="var">l'</span> (<span class="id" title="var">perms</span> <span class="id" title="var">l</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">l</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">l'</span> <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_nil</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">l'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">left</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">In</span> <span class="id" title="var">a</span> <span class="id" title="var">l'</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">Ha</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_in</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">x</span> := <span class="id" title="var">a</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">Hperm</span>; [| <span class="id" title="tactic">left</span>; <span class="id" title="tactic">reflexivity</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">in_split</span> <span class="id" title="var">a</span> <span class="id" title="var">l'</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">l1</span> [<span class="id" title="var">l2</span> <span class="id" title="var">Hl'</span>]]; [<span class="id" title="tactic">assumption</span>|].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">l'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_cons_app_inv</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">in_concat</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">insert_all</span> <span class="id" title="var">a</span> (<span class="id" title="var">l1</span> ++ <span class="id" title="var">l2</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">in_map</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">IHl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">clear</span> <span class="id" title="var">IHl</span> <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">l1</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">l1</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">insert_all_head</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">in_map</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Ha</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Ha</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Hax</span> | <span class="id" title="var">Ha'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-- <span class="id" title="tactic">subst</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_or_app</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-- <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab157"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">brute_force_complete</span></span> proves the completeness of the brute force algorithm.</h1>
+
+  *
+<a id="lab158"></a><h1 class="section">This theorem establishes that any valid n-queens solution of size n</h1>
+
+<a id="lab159"></a><h1 class="section">is found by the brute force algorithm. Specifically, any board that has:</h1>
+
+<a id="lab160"></a><h1 class="section">1. Length n</h1>
+
+<a id="lab161"></a><h1 class="section">2. Valid queen placements (no attacks)</h1>
+
+<a id="lab162"></a><h1 class="section">3. A permutation of the range 1..n</h1>
+
+<a id="lab163"></a><h1 class="section">will be returned by n_queens_brute_force.</h1>
+
+  *
+<a id="lab164"></a><h1 class="section">@param n The size of the board (n×n)</h1>
+
+<a id="lab165"></a><h1 class="section">@param b A valid board configuration of length n</h1>
+
+<a id="lab166"></a><h1 class="section">@return A proof that b is in the results of n_queens_brute_force n</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">brute_force_complete</span> <span class="id" title="var">n</span> <span class="id" title="var">b</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">length</span> <span class="id" title="var">b</span> = <span class="id" title="var">n</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">valid</span> <span class="id" title="var">b</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">Permutation</span> <span class="id" title="var">b</span> (<span class="id" title="var">range</span> <span class="id" title="var">n</span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">In</span> <span class="id" title="var">b</span> (<span class="id" title="var">n_queens_brute_force</span> <span class="id" title="var">n</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">n_queens_brute_force</span>, <span class="id" title="var">all_valid_boards</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Hlen</span> <span class="id" title="var">Hvalid</span> <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">filter_In</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">perms_complete</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_sym</span>, <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">Hvalid</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab167"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">range_length</span></span> proves that the length of <span class="inlinecode"><span class="id" title="var">range</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> is exactly n.</h1>
+
+  *
+<a id="lab168"></a><h1 class="section">This lemma establishes a basic property of the range function,</h1>
+
+<a id="lab169"></a><h1 class="section">which is essential for reasoning about the size of boards and permutations</h1>
+
+<a id="lab170"></a><h1 class="section">in the n-queens problem.</h1>
+
+  *
+<a id="lab171"></a><h1 class="section">@param n The upper bound of the range</h1>
+
+<a id="lab172"></a><h1 class="section">@return A proof that length (range n) = n</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">range_length</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span>, <span class="id" title="var">length</span> (<span class="id" title="var">range</span> <span class="id" title="var">n</span>) = <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span> <span class="id" title="var">range</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">app_length</span>, <span class="id" title="var">IH</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Nat.add_comm</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab173"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">brute_force_correct</span></span> establishes the full correctness of the brute force solver.</h1>
+
+  *
+<a id="lab174"></a><h1 class="section">This theorem combines soundness and completeness to show that the brute force</h1>
+
+<a id="lab175"></a><h1 class="section">algorithm returns exactly the boards that are:</h1>
+
+<a id="lab176"></a><h1 class="section">1. Of length n</h1>
+
+<a id="lab177"></a><h1 class="section">2. Valid (no attacking queens)</h1>
+
+<a id="lab178"></a><h1 class="section">3. Permutations of the range 1..n</h1>
+
+  *
+<a id="lab179"></a><h1 class="section">This characterizes the precise set of solutions returned by the algorithm.</h1>
+
+  *
+<a id="lab180"></a><h1 class="section">@param n The size of the board (n×n)</h1>
+
+<a id="lab181"></a><h1 class="section">@param b A board configuration</h1>
+
+<a id="lab182"></a><h1 class="section">@return A proof of the bidirectional implication between</h1>
+
+<a id="lab183"></a><h1 class="section">In b (n_queens_brute_force n) and (length b = n ∧ valid b ∧ Permutation b (range n))</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">brute_force_correct</span> <span class="id" title="var">n</span> <span class="id" title="var">b</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">In</span> <span class="id" title="var">b</span> (<span class="id" title="var">n_queens_brute_force</span> <span class="id" title="var">n</span>) &lt;-&gt;<br/>
+&nbsp;&nbsp;(<span class="id" title="var">length</span> <span class="id" title="var">b</span> = <span class="id" title="var">n</span> /\ <span class="id" title="var">valid</span> <span class="id" title="var">b</span> /\ <span class="id" title="var">Permutation</span> <span class="id" title="var">b</span> (<span class="id" title="var">range</span> <span class="id" title="var">n</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">Hin</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; [| <span class="id" title="tactic">split</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">unfold</span> <span class="id" title="var">n_queens_brute_force</span>, <span class="id" title="var">all_valid_boards</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">filter_In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Hperm</span> <span class="id" title="var">Hvalid</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">perms_sound</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_length</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">range_length</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">unfold</span> <span class="id" title="var">valid</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">brute_force_sound</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">n</span> := <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">unfold</span> <span class="id" title="var">n_queens_brute_force</span>, <span class="id" title="var">all_valid_boards</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">filter_In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Hperm</span> <span class="id" title="var">_</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">perms_sound</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hperm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Permutation_sym</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">Hlen</span> [<span class="id" title="var">Hvalid</span> <span class="id" title="var">Hperm</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">brute_force_complete</span>; <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab184"></a><h1 class="section">Efficient Backtracking Solution</h1>
+
+  *
+<a id="lab185"></a><h1 class="section">The backtracking approach is significantly more efficient than the brute force method.</h1>
+
+<a id="lab186"></a><h1 class="section">Instead of generating all possible queen placements and then checking which ones are valid,</h1>
+
+<a id="lab187"></a><h1 class="section">it incrementally builds solutions by:</h1>
+
+<a id="lab188"></a><h1 class="section">1. Placing queens column by column</h1>
+
+<a id="lab189"></a><h1 class="section">2. Only considering safe placements at each step</h1>
+
+<a id="lab190"></a><h1 class="section">3. Recursively building solutions from valid partial placements</h1>
+
+  
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+<a id="lab191"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">safeb_efficient</span></span> is an optimized version of <span class="inlinecode"><span class="id" title="var">safeb</span></span> for the backtracking solution.</h1>
+
+  *
+<a id="lab192"></a><h1 class="section">This function checks if a queen at column <span class="inlinecode"><span class="id" title="var">col</span></span> is safe with respect to queens in</h1>
+
+<a id="lab193"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">queens</span></span>, starting at row offset <span class="inlinecode"><span class="id" title="var">row_offset</span></span>. It uses early termination with</h1>
+
+<a id="lab194"></a><h1 class="section">a boolean OR operation to stop checking as soon as a conflict is detected.</h1>
+
+  *
+<a id="lab195"></a><h1 class="section">@param col The column position to check</h1>
+
+<a id="lab196"></a><h1 class="section">@param queens The list of existing queen positions</h1>
+
+<a id="lab197"></a><h1 class="section">@param row_offset The row distance from the current position</h1>
+
+<a id="lab198"></a><h1 class="section">@return true if the position is safe, false otherwise</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">safeb_efficient</span> (<span class="id" title="var">col</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">queens</span> : <span class="id" title="var">board</span>) (<span class="id" title="var">row_offset</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">bool</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">queens</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [] =&gt; <span class="id" title="var">true</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">c'</span> :: <span class="id" title="var">qs</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">if</span> <span class="id" title="var">orb</span> (<span class="id" title="var">Nat.eqb</span> <span class="id" title="var">col</span> <span class="id" title="var">c'</span>) (<span class="id" title="var">Nat.eqb</span> (<span class="id" title="var">abs</span> <span class="id" title="var">col</span> <span class="id" title="var">c'</span>) <span class="id" title="var">row_offset</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">then</span> <span class="id" title="var">false</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">else</span> <span class="id" title="var">safeb_efficient</span> <span class="id" title="var">col</span> <span class="id" title="var">qs</span> (<span class="id" title="var">S</span> <span class="id" title="var">row_offset</span>)<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab199"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">safeb_efficient_equiv</span></span> proves that <span class="inlinecode"><span class="id" title="var">safeb_efficient</span></span> and <span class="inlinecode"><span class="id" title="var">safeb</span></span> are equivalent.</h1>
+
+  *
+<a id="lab200"></a><h1 class="section">This lemma establishes that the optimized safety check function returns the same</h1>
+
+<a id="lab201"></a><h1 class="section">result as the original safety check, ensuring that the optimization preserves correctness.</h1>
+
+  *
+<a id="lab202"></a><h1 class="section">@param col The column position to check</h1>
+
+<a id="lab203"></a><h1 class="section">@param qs The list of existing queen positions</h1>
+
+<a id="lab204"></a><h1 class="section">@param offset The row distance from the current position</h1>
+
+<a id="lab205"></a><h1 class="section">@return A proof that safeb_efficient col qs offset = safeb col qs offset</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">safeb_efficient_equiv</span> <span class="id" title="var">col</span> <span class="id" title="var">qs</span> <span class="id" title="var">offset</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">safeb_efficient</span> <span class="id" title="var">col</span> <span class="id" title="var">qs</span> <span class="id" title="var">offset</span> = <span class="id" title="var">safeb</span> <span class="id" title="var">col</span> <span class="id" title="var">qs</span> <span class="id" title="var">offset</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">offset</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">qs</span> <span class="id" title="keyword">as</span> [| <span class="id" title="var">q</span> <span class="id" title="var">qs</span> <span class="id" title="var">IH</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">offset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">offset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">orb</span> (<span class="id" title="var">Nat.eqb</span> <span class="id" title="var">col</span> <span class="id" title="var">q</span>) (<span class="id" title="var">Nat.eqb</span> (<span class="id" title="var">abs</span> <span class="id" title="var">col</span> <span class="id" title="var">q</span>) <span class="id" title="var">offset</span>)) <span class="id" title="var">eqn</span>:<span class="id" title="var">E</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab206"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">solve_nqueens</span></span> implements the backtracking algorithm for the N-Queens problem.</h1>
+
+  *
+<a id="lab207"></a><h1 class="section">This function builds valid solutions incrementally by placing queens column by column.</h1>
+
+<a id="lab208"></a><h1 class="section">For each column, it checks all possible row placements and recursively extends only</h1>
+
+<a id="lab209"></a><h1 class="section">those that don't create conflicts with previously placed queens.</h1>
+
+  *
+<a id="lab210"></a><h1 class="section">@param n The size of the board (n×n)</h1>
+
+<a id="lab211"></a><h1 class="section">@param k The number of queens left to place</h1>
+
+<a id="lab212"></a><h1 class="section">@param partial The current partial solution (queens already placed)</h1>
+
+<a id="lab213"></a><h1 class="section">@return A list of all valid complete solutions that can be built from partial</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">solve_nqueens</span> (<span class="id" title="var">n</span> <span class="id" title="var">k</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">partial</span> : <span class="id" title="var">board</span>) : <span class="id" title="var">list</span> <span class="id" title="var">board</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">k</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| 0 =&gt; [<span class="id" title="var">partial</span>]<br/>
+&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">k'</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">flat_map</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">col</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">if</span> <span class="id" title="var">safeb_efficient</span> <span class="id" title="var">col</span> <span class="id" title="var">partial</span> 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">then</span> <span class="id" title="var">solve_nqueens</span> <span class="id" title="var">n</span> <span class="id" title="var">k'</span> (<span class="id" title="var">col</span> :: <span class="id" title="var">partial</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">else</span> []) (<span class="id" title="var">seq</span> 1 <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab214"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">n_queens_backtracking</span></span> is the entry point for the efficient backtracking solution.</h1>
+
+  *
+<a id="lab215"></a><h1 class="section">This function solves the N-Queens problem for an n×n board using the backtracking</h1>
+
+<a id="lab216"></a><h1 class="section">approach, which is significantly more efficient than the brute force method.</h1>
+
+  *
+<a id="lab217"></a><h1 class="section">@param n The size of the board (n×n)</h1>
+
+<a id="lab218"></a><h1 class="section">@return A list of all valid n-queens solutions</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">n_queens_backtracking</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">list</span> <span class="id" title="var">board</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">solve_nqueens</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> [].<br/>
+
+<br/>
+<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">compute</span> <span class="id" title="tactic">in</span> <span class="id" title="var">n_queens_backtracking</span> 4.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab219"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">valid_column_extension</span></span> proves that adding a safe column to a valid board maintains validity.</h1>
+
+  *
+<a id="lab220"></a><h1 class="section">This lemma is fundamental to the backtracking approach. It establishes that if we have</h1>
+
+<a id="lab221"></a><h1 class="section">a valid board <span class="inlinecode"><span class="id" title="var">b</span></span> and a column placement <span class="inlinecode"><span class="id" title="var">col</span></span> that is safe with respect to <span class="inlinecode"><span class="id" title="var">b</span></span>,</h1>
+
+<a id="lab222"></a><h1 class="section">then the extended board <span class="inlinecode"><span class="id" title="var">col</span></span> <span class="inlinecode">::</span> <span class="inlinecode"><span class="id" title="var">b</span></span> is also valid.</h1>
+
+  *
+<a id="lab223"></a><h1 class="section">@param b The existing valid partial board</h1>
+
+<a id="lab224"></a><h1 class="section">@param col The new column to add</h1>
+
+<a id="lab225"></a><h1 class="section">@param Hvalid A proof that b is valid</h1>
+
+<a id="lab226"></a><h1 class="section">@param Hsafe A proof that col is safe with respect to b</h1>
+
+<a id="lab227"></a><h1 class="section">@return A proof that (col :: b) is valid</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">valid_column_extension</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> <span class="id" title="var">col</span>,<br/>
+&nbsp;&nbsp;<span class="id" title="var">valid</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">safeb_efficient</span> <span class="id" title="var">col</span> <span class="id" title="var">b</span> 1 = <span class="id" title="var">true</span> -&gt; <span class="id" title="var">valid</span> (<span class="id" title="var">col</span> :: <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span> <span class="id" title="var">col</span> <span class="id" title="var">Hvalid</span> <span class="id" title="var">Hsafe</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">valid</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">andb_true_iff</span>. <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">safeb_efficient_equiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">Hsafe</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">Hvalid</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab228"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">solve_nqueens_sound</span></span> proves the soundness of the backtracking algorithm.</h1>
+
+  *
+<a id="lab229"></a><h1 class="section">This lemma establishes that every board returned by the <span class="inlinecode"><span class="id" title="var">solve_nqueens</span></span> function</h1>
+
+<a id="lab230"></a><h1 class="section">is valid (no queens attack each other). It shows that if we start with a valid</h1>
+
+<a id="lab231"></a><h1 class="section">partial solution, all complete solutions built from it will also be valid.</h1>
+
+  *
+<a id="lab232"></a><h1 class="section">@param n The size of the board (n×n)</h1>
+
+<a id="lab233"></a><h1 class="section">@param k The number of queens left to place</h1>
+
+<a id="lab234"></a><h1 class="section">@param partial The current partial solution</h1>
+
+<a id="lab235"></a><h1 class="section">@param Hvalid_partial A proof that partial is valid</h1>
+
+<a id="lab236"></a><h1 class="section">@param b A board in the result of solve_nqueens</h1>
+
+<a id="lab237"></a><h1 class="section">@return A proof that b is valid</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">solve_nqueens_sound</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> <span class="id" title="var">partial</span>,<br/>
+&nbsp;&nbsp;<span class="id" title="var">valid</span> <span class="id" title="var">partial</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">In</span> <span class="id" title="var">b</span> (<span class="id" title="var">solve_nqueens</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> <span class="id" title="var">partial</span>) -&gt; <span class="id" title="var">valid</span> <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">k'</span> <span class="id" title="var">IHk</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">partial</span> <span class="id" title="var">Hvalid_partial</span> <span class="id" title="var">b</span> <span class="id" title="var">Hin</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">Hin</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">Heq</span>|<span class="id" title="var">Hfalse</span>]; [|<span class="id" title="var">contradiction</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">b</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">Hvalid_partial</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">in_flat_map</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">col</span> [<span class="id" title="var">Hin_col</span> <span class="id" title="var">Hin_b</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">safeb_efficient</span> <span class="id" title="var">col</span> <span class="id" title="var">partial</span> 1) <span class="id" title="var">eqn</span>:<span class="id" title="var">Hsafe</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">assert</span> (<span class="id" title="var">valid</span> (<span class="id" title="var">col</span> :: <span class="id" title="var">partial</span>)) <span class="id" title="keyword">as</span> <span class="id" title="var">Hvalid_extended</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">apply</span> <span class="id" title="var">valid_column_extension</span>; <span class="id" title="tactic">assumption</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHk</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">partial</span> := <span class="id" title="var">col</span> :: <span class="id" title="var">partial</span>); <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin_b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">contradiction</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab238"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">backtracking_sound</span></span> proves the soundness of the overall backtracking solution.</h1>
+
+  *
+<a id="lab239"></a><h1 class="section">This theorem establishes that every board returned by the <span class="inlinecode"><span class="id" title="var">n_queens_backtracking</span></span></h1>
+
+<a id="lab240"></a><h1 class="section">function is a valid n-queens solution (no queens attack each other).</h1>
+
+  *
+<a id="lab241"></a><h1 class="section">@param n The size of the board (n×n)</h1>
+
+<a id="lab242"></a><h1 class="section">@param b A board in the result of n_queens_backtracking</h1>
+
+<a id="lab243"></a><h1 class="section">@return A proof that b is valid</h1>
+
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">backtracking_sound</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">b</span>,<br/>
+&nbsp;&nbsp;<span class="id" title="var">In</span> <span class="id" title="var">b</span> (<span class="id" title="var">n_queens_backtracking</span> <span class="id" title="var">n</span>) -&gt; <span class="id" title="var">valid</span> <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">b</span> <span class="id" title="var">Hin</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">n_queens_backtracking</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hin</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">solve_nqueens_sound</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">n</span> := <span class="id" title="var">n</span>) (<span class="id" title="var">k</span> := <span class="id" title="var">n</span>) (<span class="id" title="var">partial</span> := []); <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">valid</span>, <span class="id" title="var">validb</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+<table>
+<tr>
+<td>Global Index</td>
+<td><a href="index.html#global_A">A</a></td>
+<td><a href="index.html#global_B">B</a></td>
+<td><a href="index.html#global_C">C</a></td>
+<td>D</td>
+<td><a href="index.html#global_E">E</a></td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td><a href="index.html#global_I">I</a></td>
+<td>J</td>
+<td><a href="index.html#global_K">K</a></td>
+<td><a href="index.html#global_L">L</a></td>
+<td><a href="index.html#global_M">M</a></td>
+<td><a href="index.html#global_N">N</a></td>
+<td><a href="index.html#global_O">O</a></td>
+<td><a href="index.html#global_P">P</a></td>
+<td><a href="index.html#global_Q">Q</a></td>
+<td><a href="index.html#global_R">R</a></td>
+<td><a href="index.html#global_S">S</a></td>
+<td><a href="index.html#global_T">T</a></td>
+<td>U</td>
+<td><a href="index.html#global_V">V</a></td>
+<td>W</td>
+<td><a href="index.html#global_X">X</a></td>
+<td>Y</td>
+<td><a href="index.html#global_Z">Z</a></td>
+<td>_</td>
+<td>other</td>
+<td>(91 entries)</td>
+</tr>
+<tr>
+<td>Binder Index</td>
+<td><a href="index.html#binder_A">A</a></td>
+<td><a href="index.html#binder_B">B</a></td>
+<td><a href="index.html#binder_C">C</a></td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td>I</td>
+<td>J</td>
+<td><a href="index.html#binder_K">K</a></td>
+<td><a href="index.html#binder_L">L</a></td>
+<td><a href="index.html#binder_M">M</a></td>
+<td><a href="index.html#binder_N">N</a></td>
+<td><a href="index.html#binder_O">O</a></td>
+<td><a href="index.html#binder_P">P</a></td>
+<td><a href="index.html#binder_Q">Q</a></td>
+<td><a href="index.html#binder_R">R</a></td>
+<td>S</td>
+<td>T</td>
+<td>U</td>
+<td>V</td>
+<td>W</td>
+<td><a href="index.html#binder_X">X</a></td>
+<td>Y</td>
+<td><a href="index.html#binder_Z">Z</a></td>
+<td>_</td>
+<td>other</td>
+<td>(58 entries)</td>
+</tr>
+<tr>
+<td>Library Index</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>D</td>
+<td><a href="index.html#library_E">E</a></td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td>I</td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+<td>O</td>
+<td>P</td>
+<td>Q</td>
+<td>R</td>
+<td>S</td>
+<td>T</td>
+<td>U</td>
+<td>V</td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>_</td>
+<td>other</td>
+<td>(1 entry)</td>
+</tr>
+<tr>
+<td>Lemma Index</td>
+<td>A</td>
+<td><a href="index.html#lemma_B">B</a></td>
+<td>C</td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td><a href="index.html#lemma_I">I</a></td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+<td>O</td>
+<td><a href="index.html#lemma_P">P</a></td>
+<td>Q</td>
+<td><a href="index.html#lemma_R">R</a></td>
+<td><a href="index.html#lemma_S">S</a></td>
+<td>T</td>
+<td>U</td>
+<td><a href="index.html#lemma_V">V</a></td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>_</td>
+<td>other</td>
+<td>(15 entries)</td>
+</tr>
+<tr>
+<td>Definition Index</td>
+<td><a href="index.html#definition_A">A</a></td>
+<td><a href="index.html#definition_B">B</a></td>
+<td>C</td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td><a href="index.html#definition_I">I</a></td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td><a href="index.html#definition_N">N</a></td>
+<td>O</td>
+<td><a href="index.html#definition_P">P</a></td>
+<td>Q</td>
+<td><a href="index.html#definition_R">R</a></td>
+<td><a href="index.html#definition_S">S</a></td>
+<td><a href="index.html#definition_T">T</a></td>
+<td>U</td>
+<td><a href="index.html#definition_V">V</a></td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>_</td>
+<td>other</td>
+<td>(17 entries)</td>
+</tr>
+</table>
+<hr/>
+<h1>Global Index</h1>
+<a id="global_A"></a><h2>A </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#abs">abs</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#all_valid_boards">all_valid_boards</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#a:41">a:41</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_B"></a><h2>B </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#backtracking_sound">backtracking_sound</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#board">board</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#brute_force_correct">brute_force_correct</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#brute_force_complete">brute_force_complete</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#brute_force_sound">brute_force_sound</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:14">b:14</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:18">b:18</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:33">b:33</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:46">b:46</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:49">b:49</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:65">b:65</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:70">b:70</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:72">b:72</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:8">b:8</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_C"></a><h2>C </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:11">col:11</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:15">col:15</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:3">col:3</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:50">col:50</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:55">col:55</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:63">col:63</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:66">col:66</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_E"></a><h2>E </h2>
+<a href="Eight_Queens.html">Eight_Queens</a> [library]<br/>
+<br/><br/><a id="global_I"></a><h2>I </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#insert_all_head">insert_all_head</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#insert_all">insert_all</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#in_insert_all">in_insert_all</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_K"></a><h2>K </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#k:59">k:59</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#k:68">k:68</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_L"></a><h2>L </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l':36">l':36</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l':40">l':40</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l':44">l':44</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l1:37">l1:37</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l2:38">l2:38</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l2:42">l2:42</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l:20">l:20</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l:24">l:24</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l:35">l:35</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l:39">l:39</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l:43">l:43</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_M"></a><h2>M </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#m:2">m:2</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_N"></a><h2>N </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n_queens_backtracking">n_queens_backtracking</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n_queens_brute_force">n_queens_brute_force</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:1">n:1</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:27">n:27</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:30">n:30</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:31">n:31</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:32">n:32</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:45">n:45</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:47">n:47</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:48">n:48</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:58">n:58</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:64">n:64</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:67">n:67</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:71">n:71</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_O"></a><h2>O </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#offset:17">offset:17</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#offset:57">offset:57</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_P"></a><h2>P </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#partial:60">partial:60</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#partial:69">partial:69</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#perms">perms</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#perms_complete">perms_complete</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#perms_sound">perms_sound</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_Q"></a><h2>Q </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#qs:56">qs:56</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#queens:51">queens:51</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_R"></a><h2>R </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#range">range</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#range_length">range_length</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#rest:12">rest:12</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#rest:16">rest:16</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#rest:4">rest:4</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#row_offset:52">row_offset:52</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#row_offset:13">row_offset:13</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#row_offset:5">row_offset:5</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_S"></a><h2>S </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#safe">safe</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#safeb">safeb</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#safeb_efficient_equiv">safeb_efficient_equiv</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#safeb_efficient">safeb_efficient</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#safeb_correct">safeb_correct</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#solve_nqueens_sound">solve_nqueens_sound</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#solve_nqueens">solve_nqueens</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#sol4">sol4</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#sol4_valid">sol4_valid</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_T"></a><h2>T </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#test_invalid">test_invalid</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#test_sol4">test_sol4</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_V"></a><h2>V </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#valid">valid</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#validb">validb</a> [definition, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#validb_correct">validb_correct</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#valid_column_extension">valid_column_extension</a> [lemma, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_X"></a><h2>X </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#x:19">x:19</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#x:34">x:34</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="global_Z"></a><h2>Z </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#zs:23">zs:23</a> [binder, in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><hr/>
+<h1>Binder Index</h1>
+<a id="binder_A"></a><h2>A </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#a:41">a:41</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_B"></a><h2>B </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:14">b:14</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:18">b:18</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:33">b:33</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:46">b:46</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:49">b:49</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:65">b:65</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:70">b:70</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:72">b:72</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#b:8">b:8</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_C"></a><h2>C </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:11">col:11</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:15">col:15</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:3">col:3</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:50">col:50</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:55">col:55</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:63">col:63</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#col:66">col:66</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_K"></a><h2>K </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#k:59">k:59</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#k:68">k:68</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_L"></a><h2>L </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l':36">l':36</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l':40">l':40</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l':44">l':44</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l1:37">l1:37</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l2:38">l2:38</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l2:42">l2:42</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l:20">l:20</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l:24">l:24</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l:35">l:35</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l:39">l:39</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#l:43">l:43</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_M"></a><h2>M </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#m:2">m:2</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_N"></a><h2>N </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:1">n:1</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:27">n:27</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:30">n:30</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:31">n:31</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:32">n:32</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:45">n:45</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:47">n:47</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:48">n:48</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:58">n:58</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:64">n:64</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:67">n:67</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n:71">n:71</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_O"></a><h2>O </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#offset:17">offset:17</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#offset:57">offset:57</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_P"></a><h2>P </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#partial:60">partial:60</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#partial:69">partial:69</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_Q"></a><h2>Q </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#qs:56">qs:56</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#queens:51">queens:51</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_R"></a><h2>R </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#rest:12">rest:12</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#rest:16">rest:16</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#rest:4">rest:4</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#row_offset:52">row_offset:52</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#row_offset:13">row_offset:13</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#row_offset:5">row_offset:5</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_X"></a><h2>X </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#x:19">x:19</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#x:34">x:34</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="binder_Z"></a><h2>Z </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#zs:23">zs:23</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><hr/>
+<h1>Library Index</h1>
+<a id="library_E"></a><h2>E </h2>
+<a href="Eight_Queens.html">Eight_Queens</a> <br/>
+<br/><br/><hr/>
+<h1>Lemma Index</h1>
+<a id="lemma_B"></a><h2>B </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#backtracking_sound">backtracking_sound</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#brute_force_correct">brute_force_correct</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#brute_force_complete">brute_force_complete</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#brute_force_sound">brute_force_sound</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="lemma_I"></a><h2>I </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#insert_all_head">insert_all_head</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#in_insert_all">in_insert_all</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="lemma_P"></a><h2>P </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#perms_complete">perms_complete</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#perms_sound">perms_sound</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="lemma_R"></a><h2>R </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#range_length">range_length</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="lemma_S"></a><h2>S </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#safeb_efficient_equiv">safeb_efficient_equiv</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#safeb_correct">safeb_correct</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#solve_nqueens_sound">solve_nqueens_sound</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#sol4_valid">sol4_valid</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="lemma_V"></a><h2>V </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#validb_correct">validb_correct</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#valid_column_extension">valid_column_extension</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><hr/>
+<h1>Definition Index</h1>
+<a id="definition_A"></a><h2>A </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#abs">abs</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#all_valid_boards">all_valid_boards</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="definition_B"></a><h2>B </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#board">board</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="definition_I"></a><h2>I </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#insert_all">insert_all</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="definition_N"></a><h2>N </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n_queens_backtracking">n_queens_backtracking</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#n_queens_brute_force">n_queens_brute_force</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="definition_P"></a><h2>P </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#perms">perms</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="definition_R"></a><h2>R </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#range">range</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="definition_S"></a><h2>S </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#safe">safe</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#safeb">safeb</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#safeb_efficient">safeb_efficient</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#solve_nqueens">solve_nqueens</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#sol4">sol4</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="definition_T"></a><h2>T </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#test_invalid">test_invalid</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#test_sol4">test_sol4</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><a id="definition_V"></a><h2>V </h2>
+<a href="eight_queens_formal_methods.Eight_Queens.html#valid">valid</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<a href="eight_queens_formal_methods.Eight_Queens.html#validb">validb</a> [in <a href="eight_queens_formal_methods.Eight_Queens.html">eight_queens_formal_methods.Eight_Queens</a>]<br/>
+<br/><br/><hr/><table>
+<tr>
+<td>Global Index</td>
+<td><a href="index.html#global_A">A</a></td>
+<td><a href="index.html#global_B">B</a></td>
+<td><a href="index.html#global_C">C</a></td>
+<td>D</td>
+<td><a href="index.html#global_E">E</a></td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td><a href="index.html#global_I">I</a></td>
+<td>J</td>
+<td><a href="index.html#global_K">K</a></td>
+<td><a href="index.html#global_L">L</a></td>
+<td><a href="index.html#global_M">M</a></td>
+<td><a href="index.html#global_N">N</a></td>
+<td><a href="index.html#global_O">O</a></td>
+<td><a href="index.html#global_P">P</a></td>
+<td><a href="index.html#global_Q">Q</a></td>
+<td><a href="index.html#global_R">R</a></td>
+<td><a href="index.html#global_S">S</a></td>
+<td><a href="index.html#global_T">T</a></td>
+<td>U</td>
+<td><a href="index.html#global_V">V</a></td>
+<td>W</td>
+<td><a href="index.html#global_X">X</a></td>
+<td>Y</td>
+<td><a href="index.html#global_Z">Z</a></td>
+<td>_</td>
+<td>other</td>
+<td>(91 entries)</td>
+</tr>
+<tr>
+<td>Binder Index</td>
+<td><a href="index.html#binder_A">A</a></td>
+<td><a href="index.html#binder_B">B</a></td>
+<td><a href="index.html#binder_C">C</a></td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td>I</td>
+<td>J</td>
+<td><a href="index.html#binder_K">K</a></td>
+<td><a href="index.html#binder_L">L</a></td>
+<td><a href="index.html#binder_M">M</a></td>
+<td><a href="index.html#binder_N">N</a></td>
+<td><a href="index.html#binder_O">O</a></td>
+<td><a href="index.html#binder_P">P</a></td>
+<td><a href="index.html#binder_Q">Q</a></td>
+<td><a href="index.html#binder_R">R</a></td>
+<td>S</td>
+<td>T</td>
+<td>U</td>
+<td>V</td>
+<td>W</td>
+<td><a href="index.html#binder_X">X</a></td>
+<td>Y</td>
+<td><a href="index.html#binder_Z">Z</a></td>
+<td>_</td>
+<td>other</td>
+<td>(58 entries)</td>
+</tr>
+<tr>
+<td>Library Index</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>D</td>
+<td><a href="index.html#library_E">E</a></td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td>I</td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+<td>O</td>
+<td>P</td>
+<td>Q</td>
+<td>R</td>
+<td>S</td>
+<td>T</td>
+<td>U</td>
+<td>V</td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>_</td>
+<td>other</td>
+<td>(1 entry)</td>
+</tr>
+<tr>
+<td>Lemma Index</td>
+<td>A</td>
+<td><a href="index.html#lemma_B">B</a></td>
+<td>C</td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td><a href="index.html#lemma_I">I</a></td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+<td>O</td>
+<td><a href="index.html#lemma_P">P</a></td>
+<td>Q</td>
+<td><a href="index.html#lemma_R">R</a></td>
+<td><a href="index.html#lemma_S">S</a></td>
+<td>T</td>
+<td>U</td>
+<td><a href="index.html#lemma_V">V</a></td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>_</td>
+<td>other</td>
+<td>(15 entries)</td>
+</tr>
+<tr>
+<td>Definition Index</td>
+<td><a href="index.html#definition_A">A</a></td>
+<td><a href="index.html#definition_B">B</a></td>
+<td>C</td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td><a href="index.html#definition_I">I</a></td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td><a href="index.html#definition_N">N</a></td>
+<td>O</td>
+<td><a href="index.html#definition_P">P</a></td>
+<td>Q</td>
+<td><a href="index.html#definition_R">R</a></td>
+<td><a href="index.html#definition_S">S</a></td>
+<td><a href="index.html#definition_T">T</a></td>
+<td>U</td>
+<td><a href="index.html#definition_V">V</a></td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>_</td>
+<td>other</td>
+<td>(17 entries)</td>
+</tr>
+</table>
+<hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>
